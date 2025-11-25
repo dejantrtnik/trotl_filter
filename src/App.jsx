@@ -186,6 +186,21 @@ export default function Demo() {
         setResetSorting(false)
       }
     },
+    {
+      active: true,
+      type: 'multiselect',
+      key: 'roles',
+      value: selectedRoles,
+      placeholder: 'Select roles...',
+      role: ['developer', 'admin', 'editor'],
+      isMulti: true,
+      options: [
+        { label: '</> ' + t("roles.developer"), value: 'developer' },
+        { label: '👑 ' + t("roles.admin"), value: 'admin' },
+        { label: '✏️ ' + t("roles.editor"), value: 'editor' },
+        { label: '👁️ ' + t("roles.viewer"), value: 'viewer' }
+      ]
+    }
   ].filter((f) => f?.active)
   return (
     <div className="body-content">

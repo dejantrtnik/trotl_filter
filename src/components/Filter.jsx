@@ -6,7 +6,7 @@ import MultiSelectDropdown from "./MultiSelectDropdown";
 
 import Modal from './Modal';
 
-const Filters = ({ title, config = [], onChange, onAction, userRole = [], onExport, hideResetSearchButton, urSearchParams = false, extraSearchTerm }) => {
+const Filters = ({ title, config = [], onChange, onAction, userRole = [], onExport, hideResetSearchButton, urSearchParams = false, extraSearchTerm, theme = "light" }) => {
 
   // const { theme, internalSort, context } = useAuth();
 
@@ -120,6 +120,8 @@ const Filters = ({ title, config = [], onChange, onAction, userRole = [], onExpo
 
   // When urSearchParams is enabled, keep the URL search param `search`
   // in sync with the extraSearchTerm prop without reloading the page.
+  // When urSearchParams is enabled, keep the URL search param `search`
+  // in sync with the extraSearchTerm prop without reloading the page.
   useEffect(() => {
     if (!urSearchParams) return;
     try {
@@ -134,6 +136,17 @@ const Filters = ({ title, config = [], onChange, onAction, userRole = [], onExpo
       // fallback: do nothing if URL constructor fails (very unlikely in browsers)
     }
   }, [urSearchParams, extraSearchTerm]);
+
+  // Clear MultiSelectDropdown values if extraSearchTerm is set (input search used)
+  useEffect(() => {
+    if (!extraSearchTerm || !urSearchParams) return;
+    // Find all multiselect filters and clear them
+    config.forEach(item => {
+      if (item.type === 'multiselect' && item.value && item.value.length > 0) {
+        onChange?.(item.key, item.isMulti ? [] : '');
+      }
+    });
+  }, [extraSearchTerm, urSearchParams]);
 
   return (
     <>
@@ -209,20 +222,18 @@ const Filters = ({ title, config = [], onChange, onAction, userRole = [], onExpo
                         type="search"
                         placeholder={item.placeholder || ''}
                         value={item.value || ''}
-                        onChange={e => onChange?.(item.key, e.target.value)}
+                        onChange={e => {
+                          // If input search is used, clear all multiselects
+                          if (urSearchParams && e.target.value) {
+                            config.forEach(f => {
+                              if (f.type === 'multiselect' && f.value && f.value.length > 0) {
+                                onChange?.(f.key, f.isMulti ? [] : '');
+                              }
+                            });
+                          }
+                          onChange?.(item.key, e.target.value);
+                        }}
                       />
-
-                      {/*
-                      {item.value && (
-                        <span
-                          className="input-clear"
-                          onClick={() => onChange?.(item.key, '')}
-                          title="Clear input"
-                        >
-                          ✖️
-                        </span>
-                      )}
-                      */}
                     </div>
                   );
 
@@ -250,7 +261,29 @@ const Filters = ({ title, config = [], onChange, onAction, userRole = [], onExpo
                         label={item.label || t("role")}
                         selected={Array.isArray(item.value) ? item.value : item.value ? [item.value] : []}
                         onChange={(newValues) => {
+                          // If multiselect is used, clear all input search fields
+                          if (urSearchParams && newValues && newValues.length > 0) {
+                            config.forEach(f => {
+                              if (f.type === 'input' && f.value && f.value.length > 0) {
+                                onChange?.(f.key, '');
+                              }
+                            });
+                          }
                           onChange?.(item.key, item.isMulti ? newValues : newValues[0] || "");
+                          if (urSearchParams) {
+                            try {
+                              const url = new URL(window.location.href);
+                              const joined = Array.isArray(newValues) ? newValues.join(",") : String(newValues);
+                              if (joined && joined.length > 0) {
+                                url.searchParams.set('search', joined);
+                              } else {
+                                url.searchParams.delete('search');
+                              }
+                              window.history.replaceState({}, '', url.toString());
+                            } catch (e) {
+                              // ignore
+                            }
+                          }
                         }}
                         required={item.required}
                         isMulti={item.isMulti}
