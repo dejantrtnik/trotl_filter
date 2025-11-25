@@ -1,0 +1,59 @@
+{
+  "name": "trotl-filter",
+  "version": "1.0.0",
+  "description": "Reusable filter UI",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "dist/index.css"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "rollup -c",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "react": ">=17",
+    "react-dnd": ">=16",
+    "react-dnd-html5-backend": ">=16",
+    "react-dom": ">=17"
+  },
+  "author": "DejanTrotl",
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": {
+    "@babel/preset-react": "^7.28.5",
+    "@eslint/js": "^9.39.1",
+    "@rollup/plugin-babel": "^6.1.0",
+    "@rollup/plugin-commonjs": "^29.0.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "rollup": "^4.53.3",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-postcss": "^4.0.2",
+    "vite": "^7.2.4"
+  },
+  "dependencies": {
+    "react": ">=17",
+    "react-dnd": ">=16",
+    "react-dnd-html5-backend": ">=16",
+    "react-dom": ">=17",
+    "react-router-dom": "^7.9.6",
+    "react-select": "^5.10.2",
+    "react-virtualized": "^9.22.6"
+  },
+  "keywords": [
+    "react",
+    "calendar",
+    "drag-and-drop",
+    "ui-library"
+  ]
+}
