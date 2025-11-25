@@ -273,7 +273,25 @@ const Filters = ({ title, config = [], onChange, onAction, userRole = [], onExpo
                           if (urSearchParams) {
                             try {
                               const url = new URL(window.location.href);
-                              const joined = Array.isArray(newValues) ? newValues.join(",") : String(newValues);
+                              // Combine all selected values from all MultiSelectDropdowns
+                              let allSelected = [];
+                              config.forEach(f => {
+                                if (f.type === 'multiselect' && f.value) {
+                                  if (Array.isArray(f.value)) {
+                                    allSelected = allSelected.concat(f.value);
+                                  } else if (f.value) {
+                                    allSelected.push(f.value);
+                                  }
+                                }
+                              });
+                              // Also include the just-changed value (in case state is not yet updated)
+                              if (Array.isArray(newValues)) {
+                                allSelected = allSelected.filter(v => v !== undefined && v !== null && v !== '');
+                                newValues.forEach(v => {
+                                  if (v && !allSelected.includes(v)) allSelected.push(v);
+                                });
+                              }
+                              const joined = allSelected.join(",");
                               if (joined && joined.length > 0) {
                                 url.searchParams.set('search', joined);
                               } else {

@@ -200,7 +200,37 @@ export default function Demo() {
         { label: '✏️ ' + t("roles.editor"), value: 'editor' },
         { label: '👁️ ' + t("roles.viewer"), value: 'viewer' }
       ]
-    }
+    },
+    {
+      active: true,
+      type: 'multiselect',
+      key: 'permissions',
+      value: permissions,
+      placeholder: 'Select permissions...',
+      role: ['developer', 'admin'],
+      isMulti: true,
+      options: [
+        { label: '👁️‍🗨️ ' + t("permissions.read"), value: 'read' },
+        { label: '✍️ ' + t("permissions.write"), value: 'write' },
+        { label: '🧹 ' + t("permissions.delete"), value: 'delete' },
+        { label: '🔁 ' + t("permissions.share"), value: 'share' }
+      ]
+    },
+    {
+      active: true,
+      type: 'multiselect',
+      key: 'groups',
+      value: groups,
+      placeholder: 'Select groups...',
+      role: ['developer', 'admin'],
+      isMulti: true,
+      options: [
+        { label: '👨‍💻 ' + t("groups.developerTeam"), value: 'developer_team' },
+        { label: '🛡️ ' + t("groups.adminTeam"), value: 'admin_team' },
+        { label: '🎬 ' + t("groups.contentTeam"), value: 'content_team' },
+        { label: '👥 ' + t("groups.guestTeam"), value: 'guest_team' }
+      ]
+    },
   ].filter((f) => f?.active)
   return (
     <div className="body-content">
