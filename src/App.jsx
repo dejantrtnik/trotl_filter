@@ -27,7 +27,19 @@ export default function Demo() {
     confirmTitle: 'confirmTitle',
     confirm: 'confirm',
     cancel: 'cancel',
-    confirmUnknown: 'confirmUnknown'
+    confirmUnknown: 'confirmUnknown',
+    'roles.developer': 'Developer',
+    'roles.admin': 'Admin',
+    'roles.editor': 'Editor',
+    'roles.viewer': 'Viewer',
+    'permissions.read': 'Read',
+    'permissions.write': 'Write',
+    'permissions.delete': 'Delete',
+    'permissions.share': 'Share',
+    'groups.developerTeam': 'Developer Team',
+    'groups.adminTeam': 'Admin Team',
+    'groups.contentTeam': 'Content Team',
+    'groups.guestTeam': 'Guest Team'
   };
 
   const t = (key) => {
