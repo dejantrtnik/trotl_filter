@@ -16,7 +16,8 @@ yarn add trotl-filter
 
 \_(ツ)_/ Versions
 
-1.0.1 => initial release
+1.0.1 => readme
+1.0.0 => initial release
 
 ⚡ Quick Start
 
