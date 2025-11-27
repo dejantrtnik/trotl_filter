@@ -50,6 +50,7 @@ export default function Demo() {
   const [columns, setColumns] = useState([]);
   const [data, setData] = useState([]);
   const [refreshTrigger, setRefreshTrigger] = useState(1);
+  const [dataKey, setDataKey] = useState(0);
 
   // const [searchTerm, setSearchTerm] = useState('');
   // const [status, setStatus] = useState('');
@@ -67,9 +68,22 @@ export default function Demo() {
   const [selectedRows, setSelectedRows] = useState([]);
   const [resetSorting, setResetSorting] = useState(false)
 
-  const handleRefresh = () => {
+  const handleRefresh = (e) => {
+    console.log(e)
     setRefreshTrigger(prev => prev + 1);
   };
+
+  const handleClearFilters = (e) => {
+    console.log(e)
+    setSelectedRoles([]);
+    setPermissions([]);
+    setGroups([]);
+    setExtraSearchTerm('');
+    const url = new URL(window.location.href);
+    url.searchParams.delete('search');
+    window.history.replaceState({}, '', url);
+    setDataKey(prev => prev + 1);
+  }
 
   const filterConfig = [
     // {
@@ -159,6 +173,16 @@ export default function Demo() {
       role: ['developer', 'admin', 'editor'],
       onAction: handleRefresh
     },
+
+    {
+      active: true,
+      type: 'icon',
+      key: 'clearFilters',
+      style: { fontSize: 25 },
+      icon: '🧹', tooltip: t("clearFilters"),
+      role: ['developer', 'admin', 'editor'],
+      onAction: handleClearFilters
+    },
     {
       active: true,
       type: 'input',
@@ -247,7 +271,7 @@ export default function Demo() {
   return (
     <div className="body-content">
       <Filter
-        // key={dataKey}
+        key={dataKey}
         title={type}
         config={filterConfig}
         userRole={["developer" || '']}
@@ -263,6 +287,7 @@ export default function Demo() {
         onAction={(key) => {
           if (key === 'refresh') onCloseModal();
           if (key === 'addUser') onAddUser();
+          if (key === 'clearFilters') handleClearFilters();
         }}
       />
       <Modal
