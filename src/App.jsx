@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 // import { useNavigate, useSearchParams } from 'react-router-dom';
 import Filter from "./components/Filter.jsx";
-import "./components/Filter.css";
+
 import Modal from './components/Modal'; 
 
 
