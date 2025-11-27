@@ -276,21 +276,26 @@ const Filters = ({ title, config = [], onChange, onAction, userRole = [], onExpo
                               // Combine all selected values from all MultiSelectDropdowns
                               let allSelected = [];
                               config.forEach(f => {
-                                if (f.type === 'multiselect' && f.value) {
-                                  if (Array.isArray(f.value)) {
-                                    allSelected = allSelected.concat(f.value);
+                                if (f.type === 'multiselect') {
+                                  // Skip the current item being changed, we'll use newValues for it
+                                  if (f.key === item.key) {
+                                    if (Array.isArray(newValues) && newValues.length > 0) {
+                                      allSelected = allSelected.concat(newValues);
+                                    } else if (newValues && !Array.isArray(newValues)) {
+                                      allSelected.push(newValues);
+                                    }
                                   } else if (f.value) {
-                                    allSelected.push(f.value);
+                                    // For other multiselects, use their current value
+                                    if (Array.isArray(f.value)) {
+                                      allSelected = allSelected.concat(f.value);
+                                    } else if (f.value) {
+                                      allSelected.push(f.value);
+                                    }
                                   }
                                 }
                               });
-                              // Also include the just-changed value (in case state is not yet updated)
-                              if (Array.isArray(newValues)) {
-                                allSelected = allSelected.filter(v => v !== undefined && v !== null && v !== '');
-                                newValues.forEach(v => {
-                                  if (v && !allSelected.includes(v)) allSelected.push(v);
-                                });
-                              }
+                              // Filter out empty/null/undefined values
+                              allSelected = allSelected.filter(v => v !== undefined && v !== null && v !== '');
                               const joined = allSelected.join(",");
                               if (joined && joined.length > 0) {
                                 url.searchParams.set('search', joined);
