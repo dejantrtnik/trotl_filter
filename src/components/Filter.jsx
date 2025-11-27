@@ -10,7 +10,7 @@ const Filters = ({ title, config = [], onChange, onAction, userRole = [], onExpo
 
   // const { theme, internalSort, context } = useAuth();
 
-  console.log(extraSearchTerm)
+  // console.log(extraSearchTerm)
   // Simple translation stub: return mapped key or the key itself.
   const _translations = {
     showFilters: 'showFilters',

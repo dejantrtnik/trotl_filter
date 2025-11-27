@@ -85,6 +85,10 @@ export default function Demo() {
     setDataKey(prev => prev + 1);
   }
 
+  const onCloseModal = () => {
+    setShowModal(false);
+  }
+
   const filterConfig = [
     // {
     //   active: true,
@@ -146,7 +150,8 @@ export default function Demo() {
         setContentModal({
           title: t("therapistForm"),
           // children: <Form onClose={onCloseModal} />
-          children: <div>FORM</div>
+          children: <div onClose={onCloseModal}>FORM</div>
+
         })
         setShowModal(true); // or any other logic
       },
