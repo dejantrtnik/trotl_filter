@@ -7,7 +7,8 @@ import {
   SearchInput,
   IconInput,
   DateTimeInput,
-  RangePicker
+  RangePicker,
+  CalendarRangePicker
 } from "./index.js";
 
 
@@ -56,6 +57,7 @@ export default function App() {
           // required={isRequired("components")}
           pushUrlParamObj={"ids"}
         />
+
 
         <RangePicker
           time={true}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import PropTypes from "prop-types";
+import CalendarRangePicker from "./CalendarRangePicker.jsx";
 
 /**
  * RangePicker - a reusable date or datetime-local range picker with URL param sync
@@ -255,68 +256,131 @@ export default function RangePicker({
     onChange?.(["", ""]);
   };
 
+  // Show/hide dropdown for range selection
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  // Format range for display
+  const formatDisplay = (start, end) => {
+    if (!start && !end) return "";
+    const fmt = (v) => {
+      if (!v) return "";
+      const d = new Date(v);
+      if (isNaN(d.getTime())) return "";
+      if (time) {
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      } else {
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      }
+    };
+    return `${fmt(start)}${start&&end?" – ":""}${fmt(end)}`;
+  };
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!dropdownOpen) return;
+    const onClick = (e) => {
+      if (!e.target.closest('.range-picker-dropdown')) setDropdownOpen(false);
+    };
+    window.addEventListener('mousedown', onClick);
+    return () => window.removeEventListener('mousedown', onClick);
+  }, [dropdownOpen]);
+
   return (
     <div style={{ position: "relative", display: "inline-flex", gap: 4, ...style }} className={className}>
-      <select value={selectedRange} onChange={handlePredefinedChange} style={{ marginRight: 4 }}>
+      <select value={selectedRange} onChange={handlePredefinedChange} style={{ marginRight: 4, height: 34, minHeight: 34 }}>
         <option value="">Custom...</option>
         {PREDEFINED_RANGES.map((r, i) => (
           <option value={i} key={r.label}>{r.label}</option>
         ))}
       </select>
-      <input
-        type={time ? "datetime-local" : "date"}
-        className="basic-input"
-        value={range[0]}
-        onChange={handleChange('start')}
-        placeholder={placeholder || "Start"}
-        required={required}
-        disabled={disabled}
-        min={min}
-        max={max}
-        {...rest}
-        style={{ paddingRight: range[0] ? 24 : undefined, ...style }}
-        data-timestart={timeStart || undefined}
-        data-timezone={timezone || undefined}
-        data-timeformat={timeFormat || undefined}
-        data-dateformat={dateFormat || undefined}
-      />
-      <span style={{ alignSelf: 'center', padding: '0 2px' }}>–</span>
-      <input
-        type={time ? "datetime-local" : "date"}
-        className="basic-input"
-        value={range[1]}
-        onChange={handleChange('end')}
-        placeholder={placeholder || "End"}
-        required={required}
-        disabled={disabled}
-        min={min}
-        max={max}
-        {...rest}
-        style={{ paddingRight: range[1] ? 24 : undefined, ...style }}
-        data-timeend={timeEnd || undefined}
-        data-timezone={timezone || undefined}
-        data-timeformat={timeFormat || undefined}
-        data-dateformat={dateFormat || undefined}
-      />
-      {(range[0] || range[1]) && (
-        <span
-          onClick={handleClear}
-          title="Clear range"
-          style={{
+      <div style={{ position: "relative", flex: 1 }}>
+        <input
+          className="basic-input"
+          type="text"
+          readOnly
+          value={formatDisplay(range[0], range[1])}
+          placeholder={placeholder || (time ? "Select date & time range" : "Select date range")}
+          onFocus={() => setDropdownOpen(true)}
+          onClick={() => setDropdownOpen(true)}
+          style={{ cursor: "pointer", background: dropdownOpen ? "#f0f8ff" : undefined, height: 34, minHeight: 34, width: '100%' }}
+        />
+        {dropdownOpen && (
+          <div className="range-picker-dropdown" style={{
             position: "absolute",
-            right: 10,
-            top: "50%",
-            transform: "translateY(-50%)",
-            cursor: "pointer",
-            fontSize: 14,
-            color: "#000000ff",
-            lineHeight: 1,
-            zIndex: 2
-          }}
-        >
-          ✖
-        </span>
-      )}
+            top: "110%",
+            left: 0,
+            background: "#fff",
+            border: "1px solid #ccc",
+            borderRadius: 4,
+            boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+            padding: 12,
+            zIndex: 1000,
+            minWidth: 260
+          }}>
+            <CalendarRangePicker
+              startDate={range[0] ? new Date(range[0]) : null}
+              endDate={range[1] ? new Date(range[1]) : null}
+              onChange={(start, end) => {
+                const toStr = (d) => {
+                  if (!d) return "";
+                  if (time) {
+                    const yyyy = d.getFullYear();
+                    const mm = String(d.getMonth() + 1).padStart(2, '0');
+                    const dd = String(d.getDate()).padStart(2, '0');
+                    const hh = String(d.getHours()).padStart(2, '0');
+                    const min = String(d.getMinutes()).padStart(2, '0');
+                    return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+                  } else {
+                    const yyyy = d.getFullYear();
+                    const mm = String(d.getMonth() + 1).padStart(2, '0');
+                    const dd = String(d.getDate()).padStart(2, '0');
+                    return `${yyyy}-${mm}-${dd}`;
+                  }
+                };
+                const newRange = [toStr(start), toStr(end)];
+                if (!controlledValue) setRange(newRange);
+                setUrlParam(newRange);
+                setSelectedRange("");
+                onChange?.(newRange);
+              }}
+              time={time}
+              timeStart={timeStart}
+              timeEnd={timeEnd}
+            />
+            <div style={{ marginTop: 12, textAlign: 'right', borderTop: '1px solid #e5e7eb', paddingTop: 12 }}>
+              <button 
+                type="button" 
+                onClick={handleClear}
+                style={{ 
+                  marginRight: 8, 
+                  padding: '6px 16px', 
+                  border: '1px solid #d1d5db', 
+                  background: '#fff', 
+                  borderRadius: 4, 
+                  cursor: 'pointer',
+                  fontSize: 13
+                }}
+              >
+                Clear
+              </button>
+              <button 
+                type="button" 
+                onClick={() => setDropdownOpen(false)}
+                style={{ 
+                  padding: '6px 16px', 
+                  border: 'none', 
+                  background: '#1d4ed8', 
+                  color: '#fff', 
+                  borderRadius: 4, 
+                  cursor: 'pointer',
+                  fontSize: 13,
+                  fontWeight: 500
+                }}
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
