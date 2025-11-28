@@ -31,6 +31,46 @@ const MultiSelectDropdown = ({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // On mount, read from URL param if present and set values by matching with options
+  useEffect(() => {
+    if (!pushUrlParamObj || !options || options.length === 0) return;
+    
+    const readFromUrl = () => {
+      const params = new URLSearchParams(window.location.search);
+      const urlVal = params.get(pushUrlParamObj);
+      
+      if (urlVal) {
+        if (isMulti) {
+          const urlValues = urlVal.split(",").filter(Boolean);
+          // Match URL values with options to get the full values array
+          const matchedValues = urlValues
+            .map(v => {
+              // Try to match by converting both to strings for comparison
+              const found = options.find(opt => String(opt.value) === String(v));
+              return found ? found.value : null;
+            })
+            .filter(v => v !== null);
+          
+          if (matchedValues.length > 0 && JSON.stringify(matchedValues) !== JSON.stringify(selected)) {
+            onChange?.(matchedValues);
+          }
+        } else {
+          const found = options.find(opt => String(opt.value) === String(urlVal));
+          if (found && (!selected || selected[0] !== found.value)) {
+            onChange?.([found.value]);
+          }
+        }
+      }
+    };
+
+    readFromUrl();
+
+    // Listen for popstate (browser navigation)
+    const onPopState = () => readFromUrl();
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [pushUrlParamObj, isMulti, options, selected, onChange]);
+
   const selectedOptions = useMemo(() => {
     if (isMulti) {
       return options.filter((opt) => selected.includes(opt.value));
