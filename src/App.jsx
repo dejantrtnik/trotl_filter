@@ -59,15 +59,7 @@ export default function App() {
         />
 
 
-        <RangePicker
-          time={true}
-          timeStart={"00:00"}
-          timezone={"UTC"}
-          timeFormat={"HH:mm"}
-          dateFormat={"YYYY-MM-DD"}
-          onChange={(dt) => console.log("Selected datetime:", dt)}
-          pushUrlParamObj={"rangeTime"}
-        />
+ 
 
         <DateTimeInput
           time={true}
@@ -98,6 +90,16 @@ export default function App() {
           pushUrlParamObj={"id"}
         />
         <MultiSelectDropdown />
+
+        <RangePicker
+          time={true}
+          timeStart={"00:00"}
+          timezone={"UTC"}
+          timeFormat={"HH:mm"}
+          dateFormat={"YYYY-MM-DD"}
+          onChange={(dt) => console.log("Selected datetime:", dt)}
+          pushUrlParamObj={"rangeTime"}
+        />
       </div>
     </div>
   );

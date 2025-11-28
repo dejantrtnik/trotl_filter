@@ -259,8 +259,8 @@ export default function RangePicker({
   // Show/hide dropdown for range selection
   const [dropdownOpen, setDropdownOpen] = useState(false);
   // Format range for display
-  const formatDisplay = (start, end) => {
-    if (!start && !end) return "";
+  const formatDisplay = () => {
+    if (!range[0] && !range[1]) return { start: "", end: "" };
     const fmt = (v) => {
       if (!v) return "";
       const d = new Date(v);
@@ -271,7 +271,7 @@ export default function RangePicker({
         return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
       }
     };
-    return `${fmt(start)}${start&&end?" – ":""}${fmt(end)}`;
+    return { start: fmt(range[0]), end: fmt(range[1]) };
   };
   // Close dropdown on outside click
   useEffect(() => {
@@ -292,16 +292,41 @@ export default function RangePicker({
         ))}
       </select>
       <div style={{ position: "relative", flex: 1 }}>
-        <input
-          className="basic-input"
-          type="text"
-          readOnly
-          value={formatDisplay(range[0], range[1])}
-          placeholder={placeholder || (time ? "Select date & time range" : "Select date range")}
-          onFocus={() => setDropdownOpen(true)}
-          onClick={() => setDropdownOpen(true)}
-          style={{ cursor: "pointer", background: dropdownOpen ? "#f0f8ff" : undefined, height: 34, minHeight: 34, width: '100%' }}
-        />
+        <div 
+          onClick={() => setDropdownOpen(!dropdownOpen)}
+          style={{ 
+            cursor: "pointer", 
+            background: dropdownOpen ? "#f0f8ff" : "#fff", 
+            height: 34, 
+            minHeight: 34, 
+            width: '100%',
+            border: '1px solid #ccc',
+            borderRadius: 4,
+            display: 'flex',
+            alignItems: 'center',
+            padding: '0 32px 0 8px',
+            position: 'relative',
+            fontSize: 14
+          }}
+        >
+          <span style={{ color: formatDisplay().start ? '#333' : '#999', flex: 1 }}>
+            {formatDisplay().start || 'Start date'}
+          </span>
+          <span style={{ padding: '0 8px', color: '#999' }}>→</span>
+          <span style={{ color: formatDisplay().end ? '#333' : '#999', flex: 1 }}>
+            {formatDisplay().end || 'End date'}
+          </span>
+          <span style={{ 
+            position: 'absolute', 
+            right: 8, 
+            top: '50%', 
+            transform: 'translateY(-50%)',
+            fontSize: 16,
+            color: '#666'
+          }}>
+            📅
+          </span>
+        </div>
         {dropdownOpen && (
           <div className="range-picker-dropdown" style={{
             position: "absolute",
