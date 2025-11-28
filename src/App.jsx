@@ -79,6 +79,7 @@ export default function App() {
           dateFormat={"YYYY-MM-DD"}
           onChange={(dt) => console.log("Selected datetime:", dt)}
           pushUrlParamObj={"datetime"}
+          predefinedRanges={['today', 'yesterday', 'lastweek', 7, 'thismonth', 'lastyear']}
         />
 
         <IconInput
