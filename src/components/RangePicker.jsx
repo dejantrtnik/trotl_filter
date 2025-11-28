@@ -508,7 +508,7 @@ export default function RangePicker({
             position: 'absolute',
             right: 8,
             top: '50%',
-            transform: 'translateY(-50%)',
+            transform: 'translateY(-51%)',
             fontSize: 16,
             color: '#666'
           }}>
