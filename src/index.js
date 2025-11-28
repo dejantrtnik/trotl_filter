@@ -1,4 +1,5 @@
 // src/index.js
-import Filter from "./components/Filter.jsx";
-export default Filter;   // if you want default import
-export { Filter };       // if you want named import
+import MultiSelectDropdown from "./components/MultiSelectDropdown.jsx";
+import DebounceSelect from "./components/DebounceSelect.jsx";
+// export default Filter;   // if you want default import
+export { MultiSelectDropdown, DebounceSelect };
