@@ -246,7 +246,7 @@ const DebounceSelect = ({
                   {label}
                 </div>
               ))}
-              {input.trim() && !inputExists && (
+              {input.trim() && !inputExists && typeof addItem === 'function' && (
                 <div
                   className="basic-input-dropdown-item"
                   style={{ color: '#1677ff', fontWeight: 500 }}
@@ -256,7 +256,7 @@ const DebounceSelect = ({
                 </div>
               )}
             </>
-          ) : input.trim() && !loading ? (
+          ) : input.trim() && !loading && typeof addItem === 'function' ? (
             <div
               className="basic-input-dropdown-item"
               style={{ color: '#1677ff', fontWeight: 500 }}

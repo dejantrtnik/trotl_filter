@@ -62,7 +62,7 @@ export default function App() {
           label={"components"}
           options={uniqueOptions}
           // addItem={(newOption) => console.log(newOption)}
-          addItem={(newOption) => setOptions(prev => [...prev, newOption])}
+          // addItem={(newOption) => setOptions(prev => [...prev, newOption])}
           closeMenuOnSelect={false}
           selected={formData.components}
           // onChange={(newValues) => console.log(newValues)}
@@ -111,7 +111,7 @@ export default function App() {
           disabled={false}
           style={{ width: 300 }}
           pushUrlParamObj={"id"}
-          addItem={(newOption) => setUserOptions(prev => [...prev, newOption])}
+          // addItem={(newOption) => setUserOptions(prev => [...prev, newOption])}
         />
         <MultiSelectDropdown />
 

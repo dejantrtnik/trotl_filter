@@ -107,14 +107,14 @@ const MultiSelectDropdown = ({
 
   // Add special option for +Add if inputValue is non-empty and not in options
   const menuOptions = useMemo(() => {
-    if (inputValue && !inputExists) {
+    if (inputValue && !inputExists && typeof addItem === 'function') {
       return [
         ...options,
         { label: `+ Add "${inputValue.trim()}"`, value: '__add_new__', __isAddNew: true }
       ];
     }
     return options;
-  }, [options, inputValue, inputExists]);
+  }, [options, inputValue, inputExists, addItem]);
 
   const handleAddNew = () => {
     if (!inputValue.trim()) return;
