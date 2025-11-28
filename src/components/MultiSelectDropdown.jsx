@@ -11,6 +11,7 @@ const MultiSelectDropdown = ({
   required = false,
   closeMenuOnSelect = false,
   pushUrlParamObj = false, // pushUrlParamObj={"ids"}
+  addItem = undefined,
 }) => {
   const containerRef = useRef(null);
   const [maxVisible, setMaxVisible] = useState(1);
@@ -96,6 +97,76 @@ const MultiSelectDropdown = ({
       url.searchParams.set(pushUrlParamObj, value);
     }
     window.history.replaceState({}, "", url);
+  };
+
+  // For custom input: track input value and show add button as inline option
+  const [inputValue, setInputValue] = useState("");
+  const inputExists = useMemo(() => {
+    return options.some(opt => String(opt.label).toLowerCase() === inputValue.trim().toLowerCase());
+  }, [inputValue, options]);
+
+  // Add special option for +Add if inputValue is non-empty and not in options
+  const menuOptions = useMemo(() => {
+    if (inputValue && !inputExists) {
+      return [
+        ...options,
+        { label: `+ Add "${inputValue.trim()}"`, value: '__add_new__', __isAddNew: true }
+      ];
+    }
+    return options;
+  }, [options, inputValue, inputExists]);
+
+  const handleAddNew = () => {
+    if (!inputValue.trim()) return;
+    const newLabel = inputValue.trim();
+    // Prevent duplicate by value or label (case-insensitive)
+    const exists = options.some(opt =>
+      String(opt.value).toLowerCase() === newLabel.toLowerCase() ||
+      String(opt.label).toLowerCase() === newLabel.toLowerCase()
+    );
+    if (exists) {
+      setInputValue("");
+      return;
+    }
+    const newOption = { label: newLabel, value: newLabel };
+    if (typeof addItem === 'function') {
+      addItem(newOption);
+      // return;
+    }
+    if (isMulti) {
+      onChange([...(selected || []), newOption.value]);
+      if (pushUrlParamObj) setUrlParam([...(selected || []), newOption.value].join(","));
+    } else {
+      onChange([newOption.value]);
+      if (pushUrlParamObj) setUrlParam(newOption.value);
+    }
+    setInputValue("");
+  };
+
+  // Custom Option to handle +Add
+  const Option = (props) => {
+    if (props.data.__isAddNew) {
+      return (
+        <div
+          {...props.innerProps}
+          style={{
+            padding: '8px 12px',
+            cursor: 'pointer',
+            color: '#1677ff',
+            fontWeight: 500,
+            background: props.isFocused ? '#e6f4ff' : '#fff',
+          }}
+          onMouseDown={e => {
+            e.preventDefault();
+            handleAddNew();
+            props.selectOption(props.data);
+          }}
+        >
+          {props.data.label}
+        </div>
+      );
+    }
+    return <components.Option {...props} />;
   };
 
   const handleChange = (selectedItems) => {
@@ -231,15 +302,26 @@ const MultiSelectDropdown = ({
     >
       <Select
         isMulti={isMulti}
-        options={options}
+        options={menuOptions}
         value={selectedOptions}
-        onChange={handleChange}
+        onChange={(val, action) => {
+          // If user selects the +Add option, handle it
+          if (action && action.action === 'select-option' && val && val.length && val[val.length-1]?.__isAddNew) {
+            handleAddNew();
+            return;
+          }
+          handleChange(val);
+        }}
         placeholder={placeholder}
         styles={selectStyle}
-        components={{ MultiValue }}
+        components={{ MultiValue, Option }}
         menuPortalTarget={document.body}
         closeMenuOnSelect={closeMenuOnSelect}
         aria-required={required}
+        inputValue={inputValue}
+        onInputChange={(val, action) => {
+          if (action.action === "input-change") setInputValue(val);
+        }}
       />
       {showRequiredError && (
         <div className="error-text">This field is required.</div>

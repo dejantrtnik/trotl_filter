@@ -13,14 +13,22 @@ import {
 
 
 const users = [
-  { id: 1, value: 1, label: "Alice Johnson" },
-  { id: 2, value: 2, label: "Bob Smith" },
-  { id: 3, value: 3, label: "Charlie Brown" },
-  { id: 4, value: 4, label: "Diana Prince" },
-  { id: 5, value: 5, label: "Ethan Hunt" },
+  { value: "1", label: "Alice Johnson" },
+  { value: "2", label: "Bob Smith" },
+  { value: "3", label: "Charlie Brown" },
+  { value: "4", label: "Diana Prince" },
+  { value: "5", label: "Ethan Hunt" },
 ];
 
 export default function App() {
+
+  const [options, setOptions] = useState([
+    { id: 1, value: 1, label: "Alice Johnson" },
+    { id: 2, value: 2, label: "Bob Smith" },
+    { id: 3, value: 3, label: "Charlie Brown" },
+    { id: 4, value: 4, label: "Diana Prince" },
+    { id: 5, value: 5, label: "Ethan Hunt" },
+  ]);
   const [formData, setFormData] = useState({
     components: [],
     inputValue: ""
@@ -35,6 +43,11 @@ export default function App() {
     // const response = await getData(`/api/users?search=${query}`, "token", user.sessionId);
     // return response;
   };
+  // Filter out duplicate options by value
+  const uniqueOptions = options.filter(
+    (option, index, self) =>
+      index === self.findIndex((o) => o.value === option.value)
+  );
 
   return (
     <div className="body-content">
@@ -44,13 +57,9 @@ export default function App() {
           className="multi-select-dropdown"
           isMulti={true}
           label={"components"}
-          options={[
-            { id: 1, value: 1, label: "Alice Johnson" },
-            { id: 2, value: 2, label: "Bob Smith" },
-            { id: 3, value: 3, label: "Charlie Brown" },
-            { id: 4, value: 4, label: "Diana Prince" },
-            { id: 5, value: 5, label: "Ethan Hunt" },
-          ]}
+          options={uniqueOptions}
+          // addItem={(newOption) => console.log(newOption)}
+          addItem={(newOption) => setOptions(prev => [...prev, newOption])}
           closeMenuOnSelect={false}
           selected={formData.components}
           // onChange={(newValues) => console.log(newValues)}
