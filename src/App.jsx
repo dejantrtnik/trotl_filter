@@ -58,6 +58,7 @@ export default function App() {
 
         <DateTimeInput
           time={true}
+          timeStart={"00:00"}
           timezone={"UTC"}
           timeFormat={"HH:mm"}
           dateFormat={"YYYY-MM-DD"}

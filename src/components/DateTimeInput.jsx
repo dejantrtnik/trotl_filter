@@ -18,6 +18,7 @@ export default function DateTimeInput({
   value: controlledValue,
   onChange,
   time = false,
+  timeStart,
   timezone, // for future use
   timeFormat, // for future use
   dateFormat, // for future use
@@ -34,9 +35,51 @@ export default function DateTimeInput({
   // If controlled, use prop; else, manage local state
   const [value, setValue] = useState(() => {
     if (typeof controlledValue !== "undefined") return controlledValue;
-    if (!paramKey) return "";
+    if (!paramKey) {
+      // If not URL controlled, use timeStart or now if time, else blank
+      if (time) {
+        if (timeStart) {
+          // Compose today + timeStart as yyyy-MM-ddTHH:mm
+          const today = new Date();
+          const yyyy = today.getFullYear();
+          const mm = String(today.getMonth() + 1).padStart(2, '0');
+          const dd = String(today.getDate()).padStart(2, '0');
+          return `${yyyy}-${mm}-${dd}T${timeStart}`;
+        } else {
+          // Now in yyyy-MM-ddTHH:mm
+          const now = new Date();
+          const yyyy = now.getFullYear();
+          const mm = String(now.getMonth() + 1).padStart(2, '0');
+          const dd = String(now.getDate()).padStart(2, '0');
+          const hh = String(now.getHours()).padStart(2, '0');
+          const min = String(now.getMinutes()).padStart(2, '0');
+          return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+        }
+      }
+      return "";
+    }
     const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
-    return params.get(paramKey) || "";
+    const urlVal = params.get(paramKey);
+    if (urlVal) return urlVal;
+    // If no value in URL, use timeStart or now if time
+    if (time) {
+      if (timeStart) {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}T${timeStart}`;
+      } else {
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        const hh = String(now.getHours()).padStart(2, '0');
+        const min = String(now.getMinutes()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+      }
+    }
+    return "";
   });
 
   // Keep in sync with URL param on mount and popstate
@@ -97,6 +140,7 @@ export default function DateTimeInput({
         max={max}
         {...rest}
         style={{ paddingRight: value ? 24 : undefined, ...style }}
+        data-timestart={timeStart || undefined}
         data-timezone={timezone || undefined}
         data-timeformat={timeFormat || undefined}
         data-dateformat={dateFormat || undefined}
@@ -129,6 +173,7 @@ DateTimeInput.propTypes = {
   value: PropTypes.string,
   onChange: PropTypes.func,
   time: PropTypes.bool,
+  timeStart: PropTypes.string,
   timezone: PropTypes.string,
   timeFormat: PropTypes.string,
   dateFormat: PropTypes.string,
