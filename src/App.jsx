@@ -11,6 +11,9 @@ const users = [
 ];
 
 export default function App() {
+  const [formData, setFormData] = useState({
+    components: [],
+  });
 
   // Simulate fetching users with debounce
   const fetchUsers = async (query) => {
@@ -25,7 +28,24 @@ export default function App() {
   return (
     <div className="body-content">
       <div style={{ display: "flex", gap: "1rem" }}>
-        <MultiSelectDropdown />
+        <MultiSelectDropdown
+          className="multi-select-dropdown"
+          isMulti={true}
+          label={"components"}
+          options={[
+            { id: 1, value: 1, label: "Alice Johnson" },
+            { id: 2, value: 2, label: "Bob Smith" },
+            { id: 3, value: 3, label: "Charlie Brown" },
+            { id: 4, value: 4, label: "Diana Prince" },
+            { id: 5, value: 5, label: "Ethan Hunt" },
+          ]}
+          closeMenuOnSelect={false}
+          selected={formData.components}
+          // onChange={(newValues) => console.log(newValues)}
+          onChange={(newValues) => setFormData({ ...formData, components: newValues })}
+          // required={isRequired("components")}
+          pushUrlParamObj={"ids"}
+        />
         <DebounceSelect
           fetchOptions={fetchUsers}
           placeholder="Select a user"
