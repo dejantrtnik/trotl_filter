@@ -50,69 +50,9 @@ export default function App() {
           pushUrlParamObj={"ids"}
         />
 
-        <SearchInput /> 
-
-        <div
-          title={"tooltip"}
-          style={{
-            position: "relative",
-            display: "inline-block",
-            height: "34px", 
-            verticalAlign: "middle"
-          }}
-        >
-          <input
-            className="basic-input"
-            value={formData?.inputValue}
-            style={{
-              marginBottom: "10px",
-              padding: "5px",
-              width: "200px",
-              paddingRight: formData?.inputValue ? "24px" : undefined,
-              height: "100%",
-              boxSizing: "border-box"
-            }}
-            onChange={e => {
-              const newValue = e.target.value;
-              setFormData(prev => ({ ...prev, inputValue: newValue }));
-
-              // Update the URL search param
-              const params = new URLSearchParams(window.location.search);
-              params.set("search", newValue);
-              const newUrl =
-                window.location.pathname +
-                (params.toString() ? "?" + params.toString() : "");
-              window.history.replaceState({}, "", newUrl);
-            }}
-          />
-          {formData?.inputValue && (
-            <span
-              // className="date-clear"
-              onClick={() => {
-                setFormData(prev => ({ ...prev, inputValue: "" }));
-                const params = new URLSearchParams(window.location.search);
-                params.delete("search");
-                const newUrl =
-                  window.location.pathname +
-                  (params.toString() ? "?" + params.toString() : "");
-                window.history.replaceState({}, "", newUrl);
-              }}
-              title="Clear date"
-              style={{
-                position: "absolute",
-                right: "10px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                cursor: "pointer",
-                fontSize: "14px",
-                color: "#000000ff",
-                lineHeight: "1",
-                // fontWeight: "bold"
-              }}>
-              ✖
-            </span>
-          )}
-        </div>
+        <SearchInput
+          pushUrlParamObj={"search"}
+        />
 
         <DebounceSelect
           fetchOptions={fetchUsers}
@@ -128,24 +68,3 @@ export default function App() {
     </div>
   );
 }
-
-// <div className="filter-date" title={"tooltip"}>
-// <input
-//     className="basic-input"
-//   // type={item.addTime ? 'datetime-local' : 'date'}
-//   // value={item.value || ''}
-//   // onChange={e => onChange?.(item.key, e.target.value)}
-//   />
-//   {/*
-//
-//           {item.value && (
-//             <span
-//               className="date-clear"
-//               // onClick={() => onChange?.(item.key, '')}
-//               title="Clear date"
-//             >
-//               ✖️
-//             </span>
-//           )}
-//             */}
-// </div>

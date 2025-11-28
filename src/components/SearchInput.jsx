@@ -1,10 +1,26 @@
 import React from "react";
 
+
 export default function SearchInput({ pushUrlParamObj = null, ...props }) {
-  // Helper to update the URL param
-  const [value, setValue] = React.useState();
+  const key = pushUrlParamObj || "search";
+  const [value, setValue] = React.useState("");
+
+  // On mount, read the URL param and set value
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const urlValue = params.get(key) || "";
+    setValue(urlValue);
+
+    // Listen for popstate (browser navigation)
+    const onPopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      setValue(params.get(key) || "");
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [key]);
+
   const setUrlParam = (val) => {
-    const key = pushUrlParamObj || "search";
     const params = new URLSearchParams(window.location.search);
     if (val && val.length > 0) {
       params.set(key, val);
@@ -17,7 +33,6 @@ export default function SearchInput({ pushUrlParamObj = null, ...props }) {
 
   const handleChange = (e) => {
     const newValue = e.target.value;
-    // onChange?.(newValue);
     setValue(newValue);
     setUrlParam(newValue);
   };
