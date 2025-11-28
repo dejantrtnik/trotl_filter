@@ -34,23 +34,18 @@ const MultiSelectDropdown = ({
   // On mount, read from URL param if present and set values by matching with options
   useEffect(() => {
     if (!pushUrlParamObj || !options || options.length === 0) return;
-    
     const readFromUrl = () => {
       const params = new URLSearchParams(window.location.search);
       const urlVal = params.get(pushUrlParamObj);
-      
       if (urlVal) {
         if (isMulti) {
           const urlValues = urlVal.split(",").filter(Boolean);
-          // Match URL values with options to get the full values array
           const matchedValues = urlValues
             .map(v => {
-              // Try to match by converting both to strings for comparison
               const found = options.find(opt => String(opt.value) === String(v));
               return found ? found.value : null;
             })
             .filter(v => v !== null);
-          
           if (matchedValues.length > 0 && JSON.stringify(matchedValues) !== JSON.stringify(selected)) {
             onChange?.(matchedValues);
           }
@@ -62,13 +57,26 @@ const MultiSelectDropdown = ({
         }
       }
     };
-
     readFromUrl();
-
-    // Listen for popstate (browser navigation)
-    const onPopState = () => readFromUrl();
-    window.addEventListener("popstate", onPopState);
-    return () => window.removeEventListener("popstate", onPopState);
+    window.addEventListener("popstate", readFromUrl);
+    // Listen for pushState/replaceState (programmatic changes)
+    const patchHistory = (type) => {
+      const orig = window.history[type];
+      window.history[type] = function() {
+        const rv = orig.apply(this, arguments);
+        window.dispatchEvent(new Event(type));
+        return rv;
+      };
+    };
+    patchHistory('pushState');
+    patchHistory('replaceState');
+    window.addEventListener('pushState', readFromUrl);
+    window.addEventListener('replaceState', readFromUrl);
+    return () => {
+      window.removeEventListener("popstate", readFromUrl);
+      window.removeEventListener('pushState', readFromUrl);
+      window.removeEventListener('replaceState', readFromUrl);
+    };
   }, [pushUrlParamObj, isMulti, options, selected, onChange]);
 
   const selectedOptions = useMemo(() => {

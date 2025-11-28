@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 
 /*
 Reusable IconInput component
@@ -47,6 +47,46 @@ export default function IconInput({
     }
     return raw === String(pushValue);
   });
+
+  // Auto-update active state when URL param changes
+  useEffect(() => {
+    if (!paramKey) return;
+    const syncFromUrl = () => {
+      const params = new URLSearchParams(window.location.search);
+      const raw = params.get(paramKey);
+      let nextActive = false;
+      if (raw) {
+        if (multiUrlList) {
+          const arr = raw.split(',').filter(Boolean);
+          nextActive = arr.includes(String(pushValue));
+        } else {
+          nextActive = raw === String(pushValue);
+        }
+      }
+      setActive(nextActive);
+    };
+    syncFromUrl();
+    window.addEventListener("popstate", syncFromUrl);
+    // Listen for pushState/replaceState (programmatic changes)
+    const patchHistory = (type) => {
+      const orig = window.history[type];
+      window.history[type] = function() {
+        const rv = orig.apply(this, arguments);
+        window.dispatchEvent(new Event(type));
+        return rv;
+      };
+    };
+    patchHistory('pushState');
+    patchHistory('replaceState');
+    window.addEventListener('pushState', syncFromUrl);
+    window.addEventListener('replaceState', syncFromUrl);
+    return () => {
+      window.removeEventListener("popstate", syncFromUrl);
+      window.removeEventListener('pushState', syncFromUrl);
+      window.removeEventListener('replaceState', syncFromUrl);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paramKey, multiUrlList, pushValue]);
 
   // (Removed effect-based initialization; using lazy useState instead to satisfy lint rule.)
 

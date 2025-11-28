@@ -22,6 +22,57 @@ const DebounceSelect = ({
     isMulti ? objValue ?? [] : objValue ? [objValue] : []
   );
 
+  // Auto-update selectedItems when URL param changes
+  // useEffect(() => {
+  //   if (!pushUrlParamObj) return;
+  //   const syncFromUrl = () => {
+  //     const params = new URLSearchParams(window.location.search);
+  //     const urlVal = params.get(pushUrlParamObj);
+  //     if (urlVal) {
+  //       if (isMulti) {
+  //         const urlValues = urlVal.split(",").filter(Boolean);
+  //         // Only update if different
+  //         if (JSON.stringify(urlValues) !== JSON.stringify(selectedItems.map(i => i.value))) {
+  //           // We don't have labels, so just update values
+  //           setSelectedItems(urlValues.map(v => ({ value: v, label: v })));
+  //           onSelect?.(urlValues.map(v => ({ value: v, label: v })));
+  //         }
+  //       } else {
+  //         if (!selectedItems[0] || selectedItems[0].value !== urlVal) {
+  //           setSelectedItems([{ value: urlVal, label: urlVal }]);
+  //           onSelect?.({ value: urlVal, label: urlVal });
+  //         }
+  //       }
+  //     } else {
+  //       if (selectedItems.length > 0) {
+  //         setSelectedItems([]);
+  //         onSelect?.(isMulti ? [] : null);
+  //       }
+  //     }
+  //   };
+  //   syncFromUrl();
+  //   window.addEventListener("popstate", syncFromUrl);
+  //   // Listen for pushState/replaceState (programmatic changes)
+  //   const patchHistory = (type) => {
+  //     const orig = window.history[type];
+  //     window.history[type] = function() {
+  //       const rv = orig.apply(this, arguments);
+  //       window.dispatchEvent(new Event(type));
+  //       return rv;
+  //     };
+  //   };
+  //   patchHistory('pushState');
+  //   patchHistory('replaceState');
+  //   window.addEventListener('pushState', syncFromUrl);
+  //   window.addEventListener('replaceState', syncFromUrl);
+  //   return () => {
+  //     window.removeEventListener("popstate", syncFromUrl);
+  //     window.removeEventListener('pushState', syncFromUrl);
+  //     window.removeEventListener('replaceState', syncFromUrl);
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [pushUrlParamObj, isMulti, selectedItems, onSelect]);
+
   const timeoutRef = useRef(null);
 
   useEffect(() => {
