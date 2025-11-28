@@ -681,3 +681,35 @@ body {
 .dropdown-item:hover {
   background-color: rgba(0, 0, 0, 0.05);
 }
+
+.multi-selected-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+.tag {
+  background-color: #e6f7ff;
+  border: 1px solid #91d5ff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.tag button {
+  background: none;
+  border: none;
+  margin-left: 4px;
+  cursor: pointer;
+}
+
+.basic-input-dropdown-item {
+  cursor: pointer;
+  padding: 6px 12px;
+  transition: background 0.15s;
+}
+
+.basic-input-dropdown-item:hover {
+  background: #e6f0fa;
+}

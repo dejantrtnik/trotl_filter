@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useMemo, useRef, useEffect, useState } from "react";
 import Select, { components } from "react-select";
-import { useMemo, useState, useRef } from "react";
 
 const MultiSelectDropdown = ({
   isMulti = false,
@@ -9,11 +8,28 @@ const MultiSelectDropdown = ({
   onChange,
   theme = "light",
   placeholder = "Select...",
-  maxVisible = 1,
   required = false,
-  closeMenuOnSelect = false
+  closeMenuOnSelect = false,
+  pushUrlParamObj = false, // pushUrlParamObj={"ids"}
 }) => {
   const containerRef = useRef(null);
+  const [maxVisible, setMaxVisible] = useState(1);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const containerWidth = containerRef.current.offsetWidth || 200;
+    // Estimate average tag width (adjust as needed for your style)
+    const avgTagWidth = 90; // px, tweak for your font/size
+    const calculated = Math.max(1, Math.floor((containerWidth - 40) / avgTagWidth));
+    setMaxVisible(calculated);
+    // Optionally, recalculate on window resize:
+    const handleResize = () => {
+      const w = containerRef.current.offsetWidth || 200;
+      setMaxVisible(Math.max(1, Math.floor((w - 40) / avgTagWidth)));
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const selectedOptions = useMemo(() => {
     if (isMulti) {
@@ -23,13 +39,30 @@ const MultiSelectDropdown = ({
     }
   }, [selected, options, isMulti]);
 
+  const setUrlParam = (value) => {
+    if (!pushUrlParamObj) return;
+    const url = new URL(window.location);
+    if (!value) {
+      url.searchParams.delete(pushUrlParamObj);
+    } else {
+      url.searchParams.set(pushUrlParamObj, value);
+    }
+    window.history.replaceState({}, "", url);
+  };
+
   const handleChange = (selectedItems) => {
     if (isMulti) {
       const values = selectedItems ? selectedItems.map((item) => item.value) : [];
       onChange(values);
+      if (pushUrlParamObj) {
+        setUrlParam(values.length ? values.join(",") : "");
+      }
     } else {
       const value = selectedItems ? [selectedItems.value] : [];
       onChange(value);
+      if (pushUrlParamObj) {
+        setUrlParam(value.length ? value[0] : "");
+      }
     }
   };
 
@@ -38,10 +71,12 @@ const MultiSelectDropdown = ({
     const allSelected = getValue();
     const hiddenCount = allSelected.length - maxVisible;
 
+    // Only render visible tags
     if (index < maxVisible) {
       return <components.MultiValue {...props} />;
     }
 
+    // Only render +N for the first hidden slot
     if (index === maxVisible && hiddenCount > 0) {
       const hiddenLabels = allSelected.slice(maxVisible).map((opt) => opt.label).join(", ");
       return (
@@ -52,9 +87,11 @@ const MultiSelectDropdown = ({
             backgroundColor: theme === "dark" ? "#333" : "#e0e0e0",
             color: theme === "dark" ? "#eee" : "#333",
             borderRadius: 4,
-            padding: "0 6px",
-            fontSize: "0.8em",
-            alignSelf: "center",
+            padding: "2px 8px",
+            fontSize: "0.85em",
+            display: "inline-flex",
+            alignItems: "center",
+            marginLeft: 4,
             cursor: "default",
           }}
         >
@@ -62,6 +99,8 @@ const MultiSelectDropdown = ({
         </div>
       );
     }
+
+    // Don't render anything for other hidden tags
     return null;
   };
 
@@ -128,6 +167,11 @@ const MultiSelectDropdown = ({
       color: theme === "dark" ? "#eee" : "#333",
     }),
     menuPortal: (base) => ({ ...base, zIndex: 999999 }),
+    valueContainer: (base) => ({
+      ...base,
+      flexWrap: "nowrap",
+      overflow: "hidden",
+    }),
   };
 
   const showRequiredError = required && (!selected || selected.length === 0);
@@ -147,7 +191,7 @@ const MultiSelectDropdown = ({
         components={{ MultiValue }}
         menuPortalTarget={document.body}
         closeMenuOnSelect={closeMenuOnSelect}
-        aria-required={required} // ✅ Accessibility hint
+        aria-required={required}
       />
       {showRequiredError && (
         <div className="error-text">This field is required.</div>
