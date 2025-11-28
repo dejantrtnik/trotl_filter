@@ -38,6 +38,15 @@ export default function App() {
 
   return (
     <div className="body-content">
+      <RangePicker
+        time={true}
+        timeStart={"00:00"}
+        timezone={"UTC"}
+        timeFormat={"HH:mm"}
+        dateFormat={"DD-MM-YYYY"}
+        onChange={(dt) => console.log("Selected datetime:", dt)}
+        pushUrlParamObj={"rangeTime"}
+      />
       <div style={{ display: "flex", gap: "1rem" }}>
         <MultiSelectDropdown
           className="multi-select-dropdown"
@@ -91,15 +100,6 @@ export default function App() {
         />
         <MultiSelectDropdown />
 
-        <RangePicker
-          time={true}
-          timeStart={"00:00"}
-          timezone={"UTC"}
-          timeFormat={"HH:mm"}
-          dateFormat={"YYYY-MM-DD"}
-          onChange={(dt) => console.log("Selected datetime:", dt)}
-          pushUrlParamObj={"rangeTime"}
-        />
       </div>
     </div>
   );

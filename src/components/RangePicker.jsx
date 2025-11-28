@@ -43,10 +43,10 @@ const PREDEFINED_RANGES = [
       const day = now.getDay() || 7;
       const start = new Date(now);
       start.setDate(now.getDate() - day + 1);
-      start.setHours(0,0,0,0);
+      start.setHours(0, 0, 0, 0);
       const end = new Date(start);
       end.setDate(start.getDate() + 6);
-      end.setHours(23,59,59,999);
+      end.setHours(23, 59, 59, 999);
       return [formatDate(start, time), formatDate(end, time)];
     }
   },
@@ -57,7 +57,7 @@ const PREDEFINED_RANGES = [
       const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
       const start = new Date(end);
       start.setDate(end.getDate() - 6);
-      start.setHours(0,0,0,0);
+      start.setHours(0, 0, 0, 0);
       return [formatDate(start, time), formatDate(end, time)];
     }
   },
@@ -77,7 +77,7 @@ const PREDEFINED_RANGES = [
       const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
       const start = new Date(end);
       start.setDate(end.getDate() - 29);
-      start.setHours(0,0,0,0);
+      start.setHours(0, 0, 0, 0);
       return [formatDate(start, time), formatDate(end, time)];
     }
   },
@@ -187,7 +187,7 @@ export default function RangePicker({
     // Listen for pushState/replaceState (programmatic changes)
     const patchHistory = (type) => {
       const orig = window.history[type];
-      window.history[type] = function() {
+      window.history[type] = function () {
         const rv = orig.apply(this, arguments);
         window.dispatchEvent(new Event(type));
         return rv;
@@ -258,18 +258,38 @@ export default function RangePicker({
 
   // Show/hide dropdown for range selection
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  // Format range for display
+  // Format range for display using dateFormat and timeFormat props
   const formatDisplay = () => {
     if (!range[0] && !range[1]) return { start: "", end: "" };
     const fmt = (v) => {
       if (!v) return "";
       const d = new Date(v);
       if (isNaN(d.getTime())) return "";
+
+      // Parse dateFormat (default: DD-MM-YYYY)
+      const actualDateFormat = dateFormat || (time ? "YYYY-MM-DD" : "DD-MM-YYYY");
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+
+      let dateStr = actualDateFormat
+        .replace('YYYY', yyyy)
+        .replace('MM', mm)
+        .replace('DD', dd);
+
       if (time) {
-        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-      } else {
-        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        // Parse timeFormat (default: HH:mm)
+        const actualTimeFormat = timeFormat || "HH:mm";
+        const hh = String(d.getHours()).padStart(2, '0');
+        const min = String(d.getMinutes()).padStart(2, '0');
+
+        const timeStr = actualTimeFormat
+          .replace('HH', hh)
+          .replace('mm', min);
+
+        return `${dateStr} ${timeStr}`;
       }
+      return dateStr;
     };
     return { start: fmt(range[0]), end: fmt(range[1]) };
   };
@@ -284,7 +304,13 @@ export default function RangePicker({
   }, [dropdownOpen]);
 
   return (
-    <div style={{ position: "relative", display: "inline-flex", gap: 4, ...style }} className={className}>
+    <div style={{
+      position: "relative",
+      display: "inline-flex",
+      gap: 4,
+      ...style
+    }}
+      className={className}>
       <select value={selectedRange} onChange={handlePredefinedChange} style={{ marginRight: 4, height: 34, minHeight: 34 }}>
         <option value="">Custom...</option>
         {PREDEFINED_RANGES.map((r, i) => (
@@ -292,16 +318,17 @@ export default function RangePicker({
         ))}
       </select>
       <div style={{ position: "relative", flex: 1 }}>
-        <div 
+        <div
+          className="basic-input"
           onClick={() => setDropdownOpen(!dropdownOpen)}
-          style={{ 
-            cursor: "pointer", 
-            background: dropdownOpen ? "#f0f8ff" : "#fff", 
-            height: 34, 
-            minHeight: 34, 
-            width: '100%',
+          style={{
+            cursor: "pointer",
+            background: dropdownOpen ? "#f0f8ff" : "#fff",
+            height: 34,
+            minHeight: 34,
+            width: 280,
             border: '1px solid #ccc',
-            borderRadius: 4,
+            borderRadius: 2,
             display: 'flex',
             alignItems: 'center',
             padding: '0 32px 0 8px',
@@ -316,10 +343,10 @@ export default function RangePicker({
           <span style={{ color: formatDisplay().end ? '#333' : '#999', flex: 1 }}>
             {formatDisplay().end || 'End date'}
           </span>
-          <span style={{ 
-            position: 'absolute', 
-            right: 8, 
-            top: '50%', 
+          <span style={{
+            position: 'absolute',
+            right: 8,
+            top: '50%',
             transform: 'translateY(-50%)',
             fontSize: 16,
             color: '#666'
@@ -371,30 +398,30 @@ export default function RangePicker({
               timeEnd={timeEnd}
             />
             <div style={{ marginTop: 12, textAlign: 'right', borderTop: '1px solid #e5e7eb', paddingTop: 12 }}>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={handleClear}
-                style={{ 
-                  marginRight: 8, 
-                  padding: '6px 16px', 
-                  border: '1px solid #d1d5db', 
-                  background: '#fff', 
-                  borderRadius: 4, 
+                style={{
+                  marginRight: 8,
+                  padding: '6px 16px',
+                  border: '1px solid #d1d5db',
+                  background: '#fff',
+                  borderRadius: 4,
                   cursor: 'pointer',
                   fontSize: 13
                 }}
               >
                 Clear
               </button>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => setDropdownOpen(false)}
-                style={{ 
-                  padding: '6px 16px', 
-                  border: 'none', 
-                  background: '#1d4ed8', 
-                  color: '#fff', 
-                  borderRadius: 4, 
+                style={{
+                  padding: '6px 16px',
+                  border: 'none',
+                  background: '#1d4ed8',
+                  color: '#fff',
+                  borderRadius: 4,
                   cursor: 'pointer',
                   fontSize: 13,
                   fontWeight: 500

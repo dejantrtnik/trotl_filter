@@ -156,7 +156,7 @@ export default function CalendarRangePicker({ startDate, endDate, onChange, time
   };
 
   return (
-    <div style={{ padding: 16, background: "#fff", border: "1px solid #ccc", borderRadius: 4, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", minWidth: 560 }}>
+    <div style={{  minWidth: 560 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
         <button onClick={prevMonth} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", padding: "4px 8px", color: "#333" }}>
           ‹‹
