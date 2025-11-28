@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 // import MultiSelectDropdown from "./components/MultiSelectDropdown.jsx";
 // import DebounceSelect from "./components/DebounceSelect.jsx";
-import { DebounceSelect, MultiSelectDropdown, SearchInput, IconInput } from "./index.js";
+import {
+  DebounceSelect,
+  MultiSelectDropdown,
+  SearchInput,
+  IconInput,
+  DateTimeInput
+} from "./index.js";
 
 
 const users = [
@@ -48,6 +54,15 @@ export default function App() {
           onChange={(newValues) => setFormData({ ...formData, components: newValues })}
           // required={isRequired("components")}
           pushUrlParamObj={"ids"}
+        />
+
+        <DateTimeInput
+          time={true}
+          timezone={"UTC"}
+          timeFormat={"HH:mm"}
+          dateFormat={"YYYY-MM-DD"}
+          onChange={(dt) => console.log("Selected datetime:", dt)}
+          pushUrlParamObj={"datetime"}
         />
 
         <IconInput
