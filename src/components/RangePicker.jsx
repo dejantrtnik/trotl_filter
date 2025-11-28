@@ -152,6 +152,18 @@ export default function RangePicker({
   // Track selected predefined range
   const [selectedRange, setSelectedRange] = useState("");
 
+  // Helper to check if a range matches a predefined range
+  const findMatchingPredefined = (start, end) => {
+    for (let i = 0; i < PREDEFINED_RANGES.length; ++i) {
+      const [pStart, pEnd] = PREDEFINED_RANGES[i].getRange(time);
+      // Compare as timestamps for precision
+      if (new Date(pStart).getTime() === new Date(start).getTime() && new Date(pEnd).getTime() === new Date(end).getTime()) {
+        return String(i);
+      }
+    }
+    return "";
+  };
+
   // Sync with URL param on mount and popstate
   useEffect(() => {
     if (!paramKey || (controlledValue && Array.isArray(controlledValue))) return;
@@ -162,6 +174,11 @@ export default function RangePicker({
         const [start, end] = urlVal.split('~');
         setRange((prev) => (prev[0] !== toInputString(start) || prev[1] !== toInputString(end) ? [toInputString(start), toInputString(end)] : prev));
         if (onChange && (range[0] !== toInputString(start) || range[1] !== toInputString(end))) onChange([start, end]);
+        // Set dropdown if matches predefined
+        const matchIdx = findMatchingPredefined(Number(start), Number(end));
+        setSelectedRange(matchIdx);
+      } else {
+        setSelectedRange("");
       }
     };
     syncFromUrl();
