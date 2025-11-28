@@ -14,6 +14,7 @@ const DebounceSelect = ({
   isMulti = false,
   pushUrlParamObj = false,
   addItem = undefined,
+  fetchAll = true,
 }) => {
   const [input, setInput] = useState("");
   const [options, setOptions] = useState([]);
@@ -87,8 +88,9 @@ const DebounceSelect = ({
 
     timeoutRef.current = setTimeout(async () => {
       try {
-        // If input is '...', fetch all options
-        const query = input === "..." ? "" : input;
+        // If fetchAll is true and input is '...', fetch all options
+        // If fetchAll is false, '...' will be treated as regular search
+        const query = (fetchAll && input === "...") ? "" : input;
         const results = await fetchOptions(query);
         setOptions(results);
       } catch (err) {
@@ -100,7 +102,7 @@ const DebounceSelect = ({
     }, debounceDelay);
 
     return () => clearTimeout(timeoutRef.current);
-  }, [input, fetchOptions, debounceDelay]);
+  }, [input, fetchOptions, debounceDelay, fetchAll]);
 
   const setUrlParam = (value) => {
     const url = new URL(window.location);
@@ -160,6 +162,23 @@ const DebounceSelect = ({
     handleSelect(newOption.value, newOption.label);
   };
 
+  // Handle double-click to fetch all when fetchAll is false
+  const handleDoubleClick = async () => {
+    if (!fetchAll && !disabled) {
+      setLoading(true);
+      setOpen(true);
+      try {
+        const results = await fetchOptions("");
+        setOptions(results);
+      } catch (err) {
+        console.error("Failed to fetch options", err);
+        setOptions([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
   return (
     <div style={{ position: 'relative' }}>
       {label && <label>{label}{required && ' *'}</label>}
@@ -195,6 +214,7 @@ const DebounceSelect = ({
           placeholder={placeholder}
           onFocus={() => setOpen(true)}
           onBlur={() => setTimeout(() => setOpen(false), 200)}
+          onDoubleClick={handleDoubleClick}
           disabled={disabled}
           style={style}
         />
