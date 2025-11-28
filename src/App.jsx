@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 // import MultiSelectDropdown from "./components/MultiSelectDropdown.jsx";
 // import DebounceSelect from "./components/DebounceSelect.jsx";
-import { DebounceSelect, MultiSelectDropdown, SearchInput } from "./index.js";
+import { DebounceSelect, MultiSelectDropdown, SearchInput, IconInput } from "./index.js";
 
 
 const users = [
@@ -48,6 +48,11 @@ export default function App() {
           onChange={(newValues) => setFormData({ ...formData, components: newValues })}
           // required={isRequired("components")}
           pushUrlParamObj={"ids"}
+        />
+
+        <IconInput
+          icon={"🔍"}
+          onAction={() => alert("Icon clicked!")}
         />
 
         <SearchInput
