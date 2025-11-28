@@ -6,7 +6,8 @@ import {
   MultiSelectDropdown,
   SearchInput,
   IconInput,
-  DateTimeInput
+  DateTimeInput,
+  RangePicker
 } from "./index.js";
 
 
@@ -54,6 +55,16 @@ export default function App() {
           onChange={(newValues) => setFormData({ ...formData, components: newValues })}
           // required={isRequired("components")}
           pushUrlParamObj={"ids"}
+        />
+
+        <RangePicker
+          time={true}
+          timeStart={"00:00"}
+          timezone={"UTC"}
+          timeFormat={"HH:mm"}
+          dateFormat={"YYYY-MM-DD"}
+          onChange={(dt) => console.log("Selected datetime:", dt)}
+          pushUrlParamObj={"rangeTime"}
         />
 
         <DateTimeInput
