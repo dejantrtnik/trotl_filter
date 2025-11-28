@@ -18,6 +18,14 @@ export default function CalendarRangePicker({ startDate, endDate, onChange, time
   });
   const rightMonth = new Date(leftMonth.getFullYear(), leftMonth.getMonth() + 1, 1);
 
+  // Update leftMonth when startDate changes (e.g., when selecting predefined ranges)
+  React.useEffect(() => {
+    if (startDate) {
+      const d = new Date(startDate);
+      setLeftMonth(new Date(d.getFullYear(), d.getMonth(), 1));
+    }
+  }, [startDate]);
+
   // Hover state for preview
   const [hoverDate, setHoverDate] = useState(null);
 
