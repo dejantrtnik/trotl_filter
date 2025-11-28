@@ -272,7 +272,23 @@ export default function RangePicker({
     return [getDefault('start'), getDefault('end')];
   });
   // Track selected predefined range
-  const [selectedRange, setSelectedRange] = useState("");
+  const [selectedRange, setSelectedRange] = useState(() => {
+    // Initialize with matching predefined range if any
+    if (!paramKey) return "";
+    const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+    const urlVal = params.get(paramKey);
+    if (urlVal && urlVal.includes('~')) {
+      const [start, end] = urlVal.split('~');
+      // Check if this matches any predefined range
+      for (let i = 0; i < PREDEFINED_RANGES.length; ++i) {
+        const [pStart, pEnd] = PREDEFINED_RANGES[i].getRange(time);
+        if (new Date(pStart).getTime() === Number(start) && new Date(pEnd).getTime() === Number(end)) {
+          return String(i);
+        }
+      }
+    }
+    return "";
+  });
 
   // Helper to check if a range matches a predefined range
   const findMatchingPredefined = (start, end) => {
@@ -379,6 +395,36 @@ export default function RangePicker({
 
   // Show/hide dropdown for range selection
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: "110%", left: 0, right: 'auto' });
+  
+  // Calculate dropdown position to prevent overflow
+  const dropdownRef = React.useRef(null);
+  
+  React.useEffect(() => {
+    if (!dropdownOpen || !dropdownRef.current) return;
+    
+    const dropdown = dropdownRef.current;
+    const rect = dropdown.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    
+    let newPosition = { top: "110%", left: 0, right: 'auto' };
+    
+    // Check if dropdown goes beyond right edge
+    if (rect.right > viewportWidth - 10) {
+      newPosition.right = 0;
+      newPosition.left = 'auto';
+    }
+    
+    // Check if dropdown goes beyond bottom edge
+    if (rect.bottom > viewportHeight - 10) {
+      newPosition.top = 'auto';
+      newPosition.bottom = "110%";
+    }
+    
+    setDropdownPosition(newPosition);
+  }, [dropdownOpen]);
+  
   // Format range for display using dateFormat and timeFormat props
   const formatDisplay = () => {
     if (!range[0] && !range[1]) return { start: "", end: "" };
@@ -470,10 +516,9 @@ export default function RangePicker({
           </span>
         </div>
         {dropdownOpen && (
-          <div className="range-picker-dropdown" style={{
+          <div ref={dropdownRef} className="range-picker-dropdown" style={{
             position: "absolute",
-            top: "110%",
-            left: 0,
+            ...dropdownPosition,
             background: "#fff",
             border: "1px solid #ccc",
             borderRadius: 4,
