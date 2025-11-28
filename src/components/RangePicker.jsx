@@ -120,6 +120,24 @@ export default function RangePicker({
     return "";
   };
   // Initial state
+  const toInputString = (ts) => {
+    if (!ts) return "";
+    const d = new Date(Number(ts));
+    if (isNaN(d.getTime())) return "";
+    if (time) {
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      const hh = String(d.getHours()).padStart(2, '0');
+      const min = String(d.getMinutes()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+    } else {
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+  };
   const [range, setRange] = useState(() => {
     if (controlledValue && Array.isArray(controlledValue)) return controlledValue;
     if (!paramKey) return [getDefault('start'), getDefault('end')];
@@ -127,7 +145,7 @@ export default function RangePicker({
     const urlVal = params.get(paramKey);
     if (urlVal && urlVal.includes('~')) {
       const [start, end] = urlVal.split('~');
-      return [start, end];
+      return [toInputString(start), toInputString(end)];
     }
     return [getDefault('start'), getDefault('end')];
   });
@@ -142,8 +160,8 @@ export default function RangePicker({
       const urlVal = params.get(paramKey);
       if (urlVal && urlVal.includes('~')) {
         const [start, end] = urlVal.split('~');
-        setRange((prev) => (prev[0] !== start || prev[1] !== end ? [start, end] : prev));
-        if (onChange && (range[0] !== start || range[1] !== end)) onChange([start, end]);
+        setRange((prev) => (prev[0] !== toInputString(start) || prev[1] !== toInputString(end) ? [toInputString(start), toInputString(end)] : prev));
+        if (onChange && (range[0] !== toInputString(start) || range[1] !== toInputString(end))) onChange([start, end]);
       }
     };
     syncFromUrl();
@@ -166,7 +184,6 @@ export default function RangePicker({
       window.removeEventListener('pushState', syncFromUrl);
       window.removeEventListener('replaceState', syncFromUrl);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramKey, onChange]);
 
   // If controlled, update local value when prop changes
@@ -178,8 +195,15 @@ export default function RangePicker({
   const setUrlParam = useCallback((vals) => {
     if (!paramKey) return;
     const params = new URLSearchParams(window.location.search);
+    // Convert input strings to timestamps
+    const toTs = (v) => {
+      if (!v) return "";
+      if (/^[0-9]+$/.test(v)) return v;
+      const d = new Date(v);
+      return d.getTime();
+    };
     if (vals[0] && vals[1]) {
-      params.set(paramKey, `${vals[0]}~${vals[1]}`);
+      params.set(paramKey, `${toTs(vals[0])}~${toTs(vals[1])}`);
     } else {
       params.delete(paramKey);
     }

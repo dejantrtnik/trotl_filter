@@ -35,60 +35,71 @@ export default function DateTimeInput({
   // If controlled, use prop; else, manage local state
   const [value, setValue] = useState(() => {
     if (typeof controlledValue !== "undefined") return controlledValue;
+    const toInputString = (ts) => {
+      if (!ts) return "";
+      const d = new Date(Number(ts));
+      if (isNaN(d.getTime())) return "";
+      if (time) {
+        // yyyy-MM-ddTHH:mm
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        const hh = String(d.getHours()).padStart(2, '0');
+        const min = String(d.getMinutes()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+      } else {
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      }
+    };
     if (!paramKey) {
       // If not URL controlled, use timeStart or now if time, else blank
-      if (time) {
-        if (timeStart) {
-          // Compose today + timeStart as yyyy-MM-ddTHH:mm
-          const today = new Date();
-          const yyyy = today.getFullYear();
-          const mm = String(today.getMonth() + 1).padStart(2, '0');
-          const dd = String(today.getDate()).padStart(2, '0');
-          return `${yyyy}-${mm}-${dd}T${timeStart}`;
-        } else {
-          // Now in yyyy-MM-ddTHH:mm
-          const now = new Date();
-          const yyyy = now.getFullYear();
-          const mm = String(now.getMonth() + 1).padStart(2, '0');
-          const dd = String(now.getDate()).padStart(2, '0');
-          const hh = String(now.getHours()).padStart(2, '0');
-          const min = String(now.getMinutes()).padStart(2, '0');
-          return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
-        }
+      let d = new Date();
+      if (time && timeStart) {
+        const [h, m] = timeStart.split(":");
+        d.setHours(Number(h), Number(m), 0, 0);
       }
-      return "";
+      return toInputString(d.getTime());
     }
     const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
     const urlVal = params.get(paramKey);
-    if (urlVal) return urlVal;
+    if (urlVal) return toInputString(urlVal);
     // If no value in URL, use timeStart or now if time
-    if (time) {
-      if (timeStart) {
-        const today = new Date();
-        const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const dd = String(today.getDate()).padStart(2, '0');
-        return `${yyyy}-${mm}-${dd}T${timeStart}`;
-      } else {
-        const now = new Date();
-        const yyyy = now.getFullYear();
-        const mm = String(now.getMonth() + 1).padStart(2, '0');
-        const dd = String(now.getDate()).padStart(2, '0');
-        const hh = String(now.getHours()).padStart(2, '0');
-        const min = String(now.getMinutes()).padStart(2, '0');
-        return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
-      }
+    let d = new Date();
+    if (time && timeStart) {
+      const [h, m] = timeStart.split(":");
+      d.setHours(Number(h), Number(m), 0, 0);
     }
-    return "";
+    return toInputString(d.getTime());
   });
 
   // Keep in sync with URL param on mount and popstate
   useEffect(() => {
     if (!paramKey || typeof controlledValue !== "undefined") return;
+    const toInputString = (ts) => {
+      if (!ts) return "";
+      const d = new Date(Number(ts));
+      if (isNaN(d.getTime())) return "";
+      if (time) {
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        const hh = String(d.getHours()).padStart(2, '0');
+        const min = String(d.getMinutes()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+      } else {
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      }
+    };
     const syncFromUrl = () => {
       const params = new URLSearchParams(window.location.search);
       const urlVal = params.get(paramKey) || "";
-      setValue((prev) => (prev !== urlVal ? urlVal : prev));
+      setValue((prev) => (prev !== toInputString(urlVal) ? toInputString(urlVal) : prev));
       if (onChange && urlVal !== value) onChange(urlVal);
     };
     syncFromUrl();
@@ -111,7 +122,6 @@ export default function DateTimeInput({
       window.removeEventListener('pushState', syncFromUrl);
       window.removeEventListener('replaceState', syncFromUrl);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramKey, onChange]);
 
   // If controlled, update local value when prop changes (no effect needed, just use controlledValue)
@@ -121,8 +131,14 @@ export default function DateTimeInput({
   const setUrlParam = useCallback((val) => {
     if (!paramKey) return;
     const params = new URLSearchParams(window.location.search);
-    if (val && val.length > 0) {
-      params.set(paramKey, val);
+    let ts = val;
+    if (val && typeof val === "string" && !/^[0-9]+$/.test(val)) {
+      // Convert input string to timestamp
+      const d = new Date(val);
+      ts = d.getTime();
+    }
+    if (ts && String(ts).length > 0 && !isNaN(Number(ts))) {
+      params.set(paramKey, String(ts));
     } else {
       params.delete(paramKey);
     }
