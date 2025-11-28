@@ -83,6 +83,113 @@ const PREDEFINED_RANGES = [
   },
 ];
 
+// Helper to create predefined range from simple format
+const createRangeFromSimple = (item, time) => {
+  // If it's a number, treat as "last N days"
+  if (typeof item === 'number') {
+    return {
+      label: `Last ${item} days`,
+      getRange: (time) => {
+        const now = new Date();
+        const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+        const start = new Date(end);
+        start.setDate(end.getDate() - (item - 1));
+        start.setHours(0, 0, 0, 0);
+        return [formatDate(start, time), formatDate(end, time)];
+      }
+    };
+  }
+  
+  // If it's a string, map to predefined functions
+  const lowerItem = item.toLowerCase();
+  const rangeMap = {
+    'today': {
+      label: 'Today',
+      getRange: (time) => {
+        const now = new Date();
+        const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+        const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+        return [formatDate(start, time), formatDate(end, time)];
+      }
+    },
+    'yesterday': {
+      label: 'Yesterday',
+      getRange: (time) => {
+        const now = new Date();
+        const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 0, 0, 0, 0);
+        const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 23, 59, 59, 999);
+        return [formatDate(start, time), formatDate(end, time)];
+      }
+    },
+    'thisweek': {
+      label: 'This week',
+      getRange: (time) => {
+        const now = new Date();
+        const day = now.getDay() || 7;
+        const start = new Date(now);
+        start.setDate(now.getDate() - day + 1);
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(start);
+        end.setDate(start.getDate() + 6);
+        end.setHours(23, 59, 59, 999);
+        return [formatDate(start, time), formatDate(end, time)];
+      }
+    },
+    'lastweek': {
+      label: 'Last week',
+      getRange: (time) => {
+        const now = new Date();
+        const day = now.getDay() || 7;
+        const start = new Date(now);
+        start.setDate(now.getDate() - day - 6);
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(start);
+        end.setDate(start.getDate() + 6);
+        end.setHours(23, 59, 59, 999);
+        return [formatDate(start, time), formatDate(end, time)];
+      }
+    },
+    'thismonth': {
+      label: 'This month',
+      getRange: (time) => {
+        const now = new Date();
+        const start = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+        const end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+        return [formatDate(start, time), formatDate(end, time)];
+      }
+    },
+    'lastmonth': {
+      label: 'Last month',
+      getRange: (time) => {
+        const now = new Date();
+        const start = new Date(now.getFullYear(), now.getMonth() - 1, 1, 0, 0, 0, 0);
+        const end = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+        return [formatDate(start, time), formatDate(end, time)];
+      }
+    },
+    'thisyear': {
+      label: 'This year',
+      getRange: (time) => {
+        const now = new Date();
+        const start = new Date(now.getFullYear(), 0, 1, 0, 0, 0, 0);
+        const end = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+        return [formatDate(start, time), formatDate(end, time)];
+      }
+    },
+    'lastyear': {
+      label: 'Last year',
+      getRange: (time) => {
+        const now = new Date();
+        const start = new Date(now.getFullYear() - 1, 0, 1, 0, 0, 0, 0);
+        const end = new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59, 999);
+        return [formatDate(start, time), formatDate(end, time)];
+      }
+    },
+  };
+  
+  return rangeMap[lowerItem] || null;
+};
+
 export default function RangePicker({
   pushUrlParamObj = false,
   value: controlledValue,
@@ -100,9 +207,23 @@ export default function RangePicker({
   style = {},
   min,
   max,
+  predefinedRanges = PREDEFINED_RANGES,
   ...rest
 }) {
   const paramKey = pushUrlParamObj || null;
+  
+  // Convert simple predefinedRanges to full format
+  const processedRanges = Array.isArray(predefinedRanges) 
+    ? predefinedRanges.map(item => {
+        // If it's already an object with label and getRange, use it as-is
+        if (typeof item === 'object' && item.label && item.getRange) {
+          return item;
+        }
+        // Otherwise, convert from simple format
+        return createRangeFromSimple(item, time);
+      }).filter(Boolean)
+    : [];
+  
   // Helper to format default value
   const getDefault = (which) => {
     if (time) {
@@ -311,12 +432,6 @@ export default function RangePicker({
       ...style
     }}
       className={className}>
-      <select value={selectedRange} onChange={handlePredefinedChange} style={{ marginRight: 4, height: 34, minHeight: 34 }}>
-        <option value="">Custom...</option>
-        {PREDEFINED_RANGES.map((r, i) => (
-          <option value={i} key={r.label}>{r.label}</option>
-        ))}
-      </select>
       <div style={{ position: "relative", flex: 1 }}>
         <div
           className="basic-input"
@@ -390,13 +505,54 @@ export default function RangePicker({
                 const newRange = [toStr(start), toStr(end)];
                 if (!controlledValue) setRange(newRange);
                 setUrlParam(newRange);
-                setSelectedRange("");
                 onChange?.(newRange);
               }}
               time={time}
               timeStart={timeStart}
               timeEnd={timeEnd}
             />
+            {/* Predefined ranges buttons */}
+            {processedRanges && processedRanges.length > 0 && (
+              <div style={{ 
+                marginTop: 12, 
+                paddingTop: 12, 
+                borderTop: '1px solid #e5e7eb',
+                display: 'flex',
+                gap: 6,
+                flexWrap: 'wrap'
+              }}>
+                {processedRanges.map((r, i) => {
+                  const isActive = selectedRange === String(i);
+                  return (
+                    <button
+                      key={r.label}
+                      type="button"
+                      onClick={() => {
+                        const { getRange } = r;
+                        const newRange = getRange(time);
+                        if (!controlledValue) setRange(newRange);
+                        setUrlParam(newRange);
+                        setSelectedRange(String(i));
+                        onChange?.(newRange);
+                      }}
+                      style={{
+                        padding: '4px 12px',
+                        border: isActive ? '1px solid #1d4ed8' : '1px solid #d1d5db',
+                        background: isActive ? '#e0f2fe' : '#fff',
+                        color: isActive ? '#1d4ed8' : '#333',
+                        borderRadius: 4,
+                        cursor: 'pointer',
+                        fontSize: 12,
+                        fontWeight: isActive ? 500 : 400,
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      {r.label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
             <div style={{ marginTop: 12, textAlign: 'right', borderTop: '1px solid #e5e7eb', paddingTop: 12 }}>
               <button
                 type="button"
@@ -454,4 +610,18 @@ RangePicker.propTypes = {
   style: PropTypes.object,
   min: PropTypes.string,
   max: PropTypes.string,
+  predefinedRanges: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.oneOfType([
+      PropTypes.string, // e.g., "today", "yesterday", "lastweek"
+      PropTypes.number, // e.g., 7, 30 (last N days)
+      PropTypes.shape({
+        label: PropTypes.string.isRequired,
+        getRange: PropTypes.func.isRequired,
+      })
+    ])),
+    PropTypes.arrayOf(PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      getRange: PropTypes.func.isRequired,
+    }))
+  ]),
 };
