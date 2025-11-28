@@ -108,20 +108,61 @@ const DebounceSelect = ({
         </div>
       )}
 
-      <input
-        className="basic-input"
-        type="text"
-        value={input}
-        onChange={(e) => {
-          setInput(e.target.value);
-          setOpen(true);
-        }}
-        placeholder={placeholder}
-        onFocus={() => setOpen(true)}
-        onBlur={() => setTimeout(() => setOpen(false), 200)}
-        disabled={disabled}
-        style={style}
-      />
+      <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+        <input
+          className="basic-input"
+          type="text"
+          value={
+            isMulti
+              ? input
+              : open
+                ? input
+                : selectedItems.length > 0
+                  ? selectedItems[0].label
+                  : input
+          }
+          onChange={(e) => {
+            setInput(e.target.value);
+            setOpen(true);
+          }}
+          placeholder={placeholder}
+          onFocus={() => setOpen(true)}
+          onBlur={() => setTimeout(() => setOpen(false), 200)}
+          disabled={disabled}
+          style={style}
+        />
+        {(input || (!isMulti && selectedItems.length > 0)) && !disabled && (
+          <button
+            type="button"
+            aria-label="Clear"
+            style={{
+              position: 'absolute',
+              right: 6,
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '1.2em',
+              color: '#888',
+              padding: 0,
+              lineHeight: 1,
+            }}
+            onMouseDown={e => {
+              e.preventDefault();
+              setInput("");
+              if (isMulti) {
+                // Do not clear selectedItems for multi
+              } else {
+                setSelectedItems([]);
+                onSelect(null);
+                if (pushUrlParamObj) setUrlParam("");
+              }
+            }}
+            tabIndex={-1}
+          >
+            ×
+          </button>
+        )}
+      </div>
 
       {open && (
         <div className="basic-input-dropdown-menu">
