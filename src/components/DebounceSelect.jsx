@@ -13,6 +13,7 @@ const DebounceSelect = ({
   style,
   isMulti = false,
   pushUrlParamObj = false,
+  addItem = undefined,
 }) => {
   const [input, setInput] = useState("");
   const [options, setOptions] = useState([]);
@@ -144,6 +145,21 @@ const DebounceSelect = ({
     }
   };
 
+  // Check if input value exists in options
+  const inputExists = input.trim() && options.some(opt => 
+    String(opt.label).toLowerCase() === input.trim().toLowerCase() ||
+    String(opt.value).toLowerCase() === input.trim().toLowerCase()
+  );
+
+  const handleAddNew = () => {
+    if (!input.trim()) return;
+    const newOption = { label: input.trim(), value: input.trim() };
+    if (typeof addItem === 'function') {
+      addItem(newOption);
+    }
+    handleSelect(newOption.value, newOption.label);
+  };
+
   return (
     <div style={{ position: 'relative' }}>
       {label && <label>{label}{required && ' *'}</label>}
@@ -220,15 +236,34 @@ const DebounceSelect = ({
           {loading ? (
             <div className="loading-dropdown-item">Loading...</div>
           ) : options?.length > 0 ? (
-            options.map(({ label, value }) => (
-              <div
-                key={value}
-                className="basic-input-dropdown-item"
-                onMouseDown={() => handleSelect(value, label)}
-              >
-                {label}
-              </div>
-            ))
+            <>
+              {options.map(({ label, value }) => (
+                <div
+                  key={value}
+                  className="basic-input-dropdown-item"
+                  onMouseDown={() => handleSelect(value, label)}
+                >
+                  {label}
+                </div>
+              ))}
+              {input.trim() && !inputExists && (
+                <div
+                  className="basic-input-dropdown-item"
+                  style={{ color: '#1677ff', fontWeight: 500 }}
+                  onMouseDown={handleAddNew}
+                >
+                  + Add "{input.trim()}"
+                </div>
+              )}
+            </>
+          ) : input.trim() && !loading ? (
+            <div
+              className="basic-input-dropdown-item"
+              style={{ color: '#1677ff', fontWeight: 500 }}
+              onMouseDown={handleAddNew}
+            >
+              + Add "{input.trim()}"
+            </div>
           ) : (
             <div className="no-results-dropdown-item">No results</div>
           )}

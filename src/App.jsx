@@ -29,6 +29,9 @@ export default function App() {
     { id: 4, value: 4, label: "Diana Prince" },
     { id: 5, value: 5, label: "Ethan Hunt" },
   ]);
+
+  const [userOptions, setUserOptions] = useState(users);
+
   const [formData, setFormData] = useState({
     components: [],
     inputValue: ""
@@ -37,7 +40,7 @@ export default function App() {
   // Simulate fetching users with debounce
   const fetchUsers = async (query) => {
     // Simulate filtering users by label
-    return users.filter(user =>
+    return userOptions.filter(user =>
       user.label.toLowerCase().includes(query.toLowerCase())
     );
     // const response = await getData(`/api/users?search=${query}`, "token", user.sessionId);
@@ -108,6 +111,7 @@ export default function App() {
           disabled={false}
           style={{ width: 300 }}
           pushUrlParamObj={"id"}
+          addItem={(newOption) => setUserOptions(prev => [...prev, newOption])}
         />
         <MultiSelectDropdown />
 
