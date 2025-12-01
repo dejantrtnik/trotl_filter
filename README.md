@@ -1,4 +1,4 @@
-# trotl-table
+# trotl-filter
 
 A simple, flexible **Filters UI** for React.
 

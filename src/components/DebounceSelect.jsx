@@ -15,7 +15,21 @@ const DebounceSelect = ({
   pushUrlParamObj = false,
   addItem = undefined,
   fetchAll = true,
+  t
 }) => {
+  let translate
+  if (t) {
+    translate = t
+  } else {
+    translate = (key) => {
+      const translations = {
+      add: "Add",
+      cancel: "Cancel",
+      };
+      return translations[key] || key;
+    }
+  }
+
   const [input, setInput] = useState("");
   const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -148,7 +162,7 @@ const DebounceSelect = ({
   };
 
   // Check if input value exists in options
-  const inputExists = input.trim() && options.some(opt => 
+  const inputExists = input.trim() && options.some(opt =>
     String(opt.label).toLowerCase() === input.trim().toLowerCase() ||
     String(opt.value).toLowerCase() === input.trim().toLowerCase()
   );
@@ -263,7 +277,7 @@ const DebounceSelect = ({
                   className="basic-input-dropdown-item"
                   onMouseDown={() => handleSelect(value, label)}
                 >
-                  {label}
+                  {translate(label)}
                 </div>
               ))}
               {input.trim() && !inputExists && typeof addItem === 'function' && (
@@ -272,7 +286,7 @@ const DebounceSelect = ({
                   style={{ color: '#1677ff', fontWeight: 500 }}
                   onMouseDown={handleAddNew}
                 >
-                  + Add "{input.trim()}"
+                  + {translate("add")} "{input.trim()}"
                 </div>
               )}
             </>
@@ -282,7 +296,7 @@ const DebounceSelect = ({
               style={{ color: '#1677ff', fontWeight: 500 }}
               onMouseDown={handleAddNew}
             >
-              + Add "{input.trim()}"
+              + {translate("add")} "{input.trim()}"
             </div>
           ) : (
             <div className="no-results-dropdown-item">No results</div>

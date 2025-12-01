@@ -13,7 +13,6 @@ const Modal = ({
   closeOnEscape = true,
   closeOnOutsideClick = true
 }) => {
-  const t = {}
   useEffect(() => {
     const handleKey = (e) => {
       if (e.key === 'Escape' && closeOnEscape) {

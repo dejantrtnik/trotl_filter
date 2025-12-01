@@ -112,7 +112,7 @@ export default function App() {
           style={{ width: 300 }}
           pushUrlParamObj={"id"}
           fetchAll={false}
-          // addItem={(newOption) => setUserOptions(prev => [...prev, newOption])}
+          addItem={(newOption) => setUserOptions(prev => [...prev, newOption])}
         />
         <MultiSelectDropdown />
 
