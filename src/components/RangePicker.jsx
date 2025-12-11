@@ -388,6 +388,28 @@ export default function RangePicker({
     onChange?.(newRange);
   };
 
+  // Extract HH:mm part from the current range value
+  const getTimeValue = useCallback((which) => {
+    const val = which === 'start' ? range[0] : range[1];
+    if (val && val.includes('T')) {
+      return val.split('T')[1].slice(0, 5);
+    }
+    return which === 'start' ? (timeStart || "") : (timeEnd || "");
+  }, [range, timeStart, timeEnd]);
+
+  // Update time while keeping the selected date
+  const handleTimeChange = (which) => (e) => {
+    const newTime = e.target.value;
+    const currentVal = which === 'start' ? range[0] : range[1];
+    const datePart = (currentVal && currentVal.split('T')[0]) || formatDate(new Date(), false);
+    const newVal = `${datePart}T${newTime}`;
+    const newRange = which === 'start' ? [newVal, range[1]] : [range[0], newVal];
+    if (!controlledValue) setRange(newRange);
+    setUrlParam(newRange);
+    setSelectedRange("");
+    onChange?.(newRange);
+  };
+
   const handleClear = () => {
     if (!controlledValue) setRange(["", ""]);
     setUrlParam(["", ""]);
@@ -558,6 +580,40 @@ export default function RangePicker({
               timeEnd={timeEnd}
               startWith={startWith}
             />
+            {time && (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: 16, rowGap: 6, marginTop: 16, width: '99%', alignItems: 'center' }}>
+                <div>
+                  <div style={{ fontSize: 12, color: '#555', marginBottom: 6 }}>Start time</div>
+                  <input
+                    type="time"
+                    value={getTimeValue('start')}
+                    onChange={handleTimeChange('start')}
+                    style={{
+                      width: '100%',
+                      padding: '4px 6px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: 2,
+                      fontSize: 12,
+                    }}
+                  />
+                </div>
+                <div>
+                  <div style={{ fontSize: 12, color: '#555', marginBottom: 6 }}>End time</div>
+                  <input
+                    type="time"
+                    value={getTimeValue('end')}
+                    onChange={handleTimeChange('end')}
+                    style={{
+                      width: '100%',
+                      padding: '4px 6px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: 2,
+                      fontSize: 12,
+                    }}
+                  />
+                </div>
+              </div>
+            )}
             {/* Predefined ranges buttons */}
             {processedRanges && processedRanges.length > 0 && (
               <div style={{ 
