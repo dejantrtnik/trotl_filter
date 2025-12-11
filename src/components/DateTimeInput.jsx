@@ -23,6 +23,7 @@ export default function DateTimeInput({
   className = "",
   style = {},
   predefinedRanges = ["today", "yesterday"],
+  startWith = "sunday",
   ...rest
 }) {
   const paramKey = pushUrlParamObj || null;
@@ -184,8 +185,12 @@ export default function DateTimeInput({
   // Build calendar days (6 weeks grid)
   const buildDays = () => {
     const startOfMonth = new Date(monthCursor.getFullYear(), monthCursor.getMonth(), 1);
-    const dayOfWeek = startOfMonth.getDay(); // 0 Sun ... 6 Sat
-    // We start at Sunday of the week containing the 1st
+    let dayOfWeek = startOfMonth.getDay(); // 0 Sun ... 6 Sat
+    // Adjust for Monday start
+    if (startWith === "monday") {
+      dayOfWeek = (dayOfWeek === 0 ? 6 : dayOfWeek - 1);
+    }
+    // We start at the first day of the week containing the 1st
     const firstGridDate = new Date(startOfMonth);
     firstGridDate.setDate(startOfMonth.getDate() - dayOfWeek);
     const days = [];
@@ -404,7 +409,10 @@ export default function DateTimeInput({
           </div>
           {/* Week headers */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', fontSize: 12, marginBottom: 4, opacity: 0.8 }}>
-            {['Su','Mo','Tu','We','Th','Fr','Sa'].map(d => <div key={d} style={{ textAlign: 'center' }}>{d}</div>)}
+            {(startWith === "monday"
+              ? ['Mo','Tu','We','Th','Fr','Sa','Su']
+              : ['Su','Mo','Tu','We','Th','Fr','Sa']
+            ).map(d => <div key={d} style={{ textAlign: 'center' }}>{d}</div>)}
           </div>
           {/* Days grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 2 }}>

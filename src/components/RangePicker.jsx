@@ -208,6 +208,7 @@ export default function RangePicker({
   min,
   max,
   predefinedRanges = PREDEFINED_RANGES,
+  startWith = "sunday",
   ...rest
 }) {
   const paramKey = pushUrlParamObj || null;
@@ -555,6 +556,7 @@ export default function RangePicker({
               time={time}
               timeStart={timeStart}
               timeEnd={timeEnd}
+              startWith={startWith}
             />
             {/* Predefined ranges buttons */}
             {processedRanges && processedRanges.length > 0 && (
@@ -655,6 +657,7 @@ RangePicker.propTypes = {
   style: PropTypes.object,
   min: PropTypes.string,
   max: PropTypes.string,
+  startWith: PropTypes.oneOf(["sunday", "monday"]),
   predefinedRanges: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.oneOfType([
       PropTypes.string, // e.g., "today", "yesterday", "lastweek"

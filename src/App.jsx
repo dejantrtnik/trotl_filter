@@ -80,6 +80,7 @@ export default function App() {
           onChange={(dt) => console.log("Selected datetime:", dt)}
           pushUrlParamObj={"rangeTime"}
           predefinedRanges={["Today", "yesterday", "lastweek", 7, 30, "thismonth", "lastyear"]}
+          startWith={"monday"}
         />
  
 
@@ -92,6 +93,7 @@ export default function App() {
           onChange={(dt) => console.log("Selected datetime:", dt)}
           pushUrlParamObj={"datetime"}
           predefinedRanges={['today', 'yesterday', 'lastweek', 7, 'thismonth', 'lastyear']}
+          startWith={"monday"}
         />
 
         <IconInput

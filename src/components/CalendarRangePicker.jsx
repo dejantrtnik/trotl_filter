@@ -9,8 +9,9 @@ import PropTypes from "prop-types";
  *   onChange: (startDate, endDate) => void
  *   time: boolean - if true, show time selectors
  *   timeStart, timeEnd: default times for start/end
+ *   startWith: "sunday" | "monday" - first day of week
  */
-export default function CalendarRangePicker({ startDate, endDate, onChange, time = false, timeStart = "00:00", timeEnd = "23:59" }) {
+export default function CalendarRangePicker({ startDate, endDate, onChange, time = false, timeStart = "00:00", timeEnd = "23:59", startWith = "sunday" }) {
   // Current view months (show 2 months)
   const [leftMonth, setLeftMonth] = useState(() => {
     const d = startDate ? new Date(startDate) : new Date();
@@ -90,7 +91,11 @@ export default function CalendarRangePicker({ startDate, endDate, onChange, time
     const monthIdx = month.getMonth();
     const firstDay = new Date(year, monthIdx, 1);
     const lastDay = new Date(year, monthIdx + 1, 0);
-    const startWeekday = firstDay.getDay(); // 0 = Sunday
+    let startWeekday = firstDay.getDay(); // 0 = Sunday
+    // Adjust for Monday start
+    if (startWith === "monday") {
+      startWeekday = (startWeekday === 0 ? 6 : startWeekday - 1);
+    }
     const daysInMonth = lastDay.getDate();
 
     const days = [];
@@ -115,7 +120,7 @@ export default function CalendarRangePicker({ startDate, endDate, onChange, time
           {month.toLocaleDateString("en-US", { month: "short", year: "numeric" })}
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2 }}>
-          {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => (
+          {(startWith === "monday" ? ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"] : ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]).map((day) => (
             <div key={day} style={{ textAlign: "center", fontSize: 11, color: "#666", fontWeight: 600, padding: "4px 0" }}>
               {day}
             </div>
@@ -191,4 +196,5 @@ CalendarRangePicker.propTypes = {
   time: PropTypes.bool,
   timeStart: PropTypes.string,
   timeEnd: PropTypes.string,
+  startWith: PropTypes.oneOf(["sunday", "monday"]),
 };
