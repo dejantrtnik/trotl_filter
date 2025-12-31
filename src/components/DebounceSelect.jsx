@@ -128,22 +128,23 @@ const DebounceSelect = ({
     window.history.replaceState({}, "", url);
   };
 
-  const handleSelect = (value, labelValue) => {
+  const handleSelect = (value, labelValue, el) => {
+    // console.log(el)
     if (isMulti) {
-      const newItem = { value, label: labelValue };
+      const newItem = { ...el, value, label: labelValue };
       const updated = selectedItems.some(item => item.value === value)
         ? selectedItems
         : [...selectedItems, newItem];
       setSelectedItems(updated);
-      onSelect(updated);
+      onSelect(value, newItem);
       setInput("");
       if (pushUrlParamObj) {
         setUrlParam(updated.map(item => item.value).join(","));
       }
     } else {
-      const single = { value, label: labelValue };
+      const single = { ...el, value, label: labelValue };
       setSelectedItems([single]);
-      onSelect(single);
+      onSelect(value, single);
       setInput(labelValue);
       if (pushUrlParamObj) {
         setUrlParam(value);
@@ -173,7 +174,7 @@ const DebounceSelect = ({
     if (typeof addItem === 'function') {
       addItem(newOption);
     }
-    handleSelect(newOption.value, newOption.label);
+    handleSelect(newOption.value, newOption.label, newOption);
   };
 
   // Handle double-click to fetch all when fetchAll is false
@@ -271,15 +272,18 @@ const DebounceSelect = ({
             <div className="loading-dropdown-item">Loading...</div>
           ) : options?.length > 0 ? (
             <>
-              {options.map(({ label, value }) => (
-                <div
-                  key={value}
-                  className="basic-input-dropdown-item"
-                  onMouseDown={() => handleSelect(value, label)}
-                >
-                  {translate(label)}
-                </div>
-              ))}
+              {options.map((el) => {
+                const { label, value } = el;
+                return (
+                  <div
+                    key={value}
+                    className="basic-input-dropdown-item"
+                    onMouseDown={() => handleSelect(value, label, el)}
+                  >
+                    {translate(label)}
+                  </div>
+                );
+              })}
               {input.trim() && !inputExists && typeof addItem === 'function' && (
                 <div
                   className="basic-input-dropdown-item"

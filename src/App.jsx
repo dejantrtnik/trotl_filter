@@ -13,11 +13,11 @@ import {
 
 
 const users = [
-  { value: "1", label: "Alice Johnson" },
-  { value: "2", label: "Bob Smith" },
-  { value: "3", label: "Charlie Brown" },
-  { value: "4", label: "Diana Prince" },
-  { value: "5", label: "Ethan Hunt" },
+  { value: "1", label: "Alice Johnson", age: 30 },
+  { value: "2", label: "Bob Smith", age: 28 },
+  { value: "3", label: "Charlie Brown", age: 25 },
+  { value: "4", label: "Diana Prince", age: 32 },
+  { value: "5", label: "Ethan Hunt", age: 35 },
 ];
 
 export default function App() {
@@ -109,7 +109,7 @@ export default function App() {
           fetchOptions={fetchUsers}
           placeholder="Select a user"
           // objValue={formData.product}
-          onSelect={(value) => console.log("Selected user ID:", value)}
+          onSelect={(value, rest) => console.log("Selected user ID:", rest)}
           disabled={false}
           style={{ width: 300 }}
           pushUrlParamObj={"id"}

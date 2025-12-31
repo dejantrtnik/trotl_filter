@@ -510,7 +510,7 @@ export default function RangePicker({
             background: dropdownOpen ? "#f0f8ff" : "#fff",
             height: 34,
             minHeight: 34,
-            width: 280,
+            width: 300,
             border: '1px solid #ccc',
             borderRadius: 2,
             display: 'flex',
