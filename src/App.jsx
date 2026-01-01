@@ -57,6 +57,8 @@ export default function App() {
       <div style={{ display: "flex", gap: "1rem" }}>
 
         <MultiSelectDropdown
+          style={{ border: "2px solid red" }}
+
           className="multi-select-dropdown"
           isMulti={true}
           label={"components"}

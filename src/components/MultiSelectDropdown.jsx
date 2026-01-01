@@ -12,6 +12,7 @@ const MultiSelectDropdown = ({
   closeMenuOnSelect = false,
   pushUrlParamObj = false, // pushUrlParamObj={"ids"}
   addItem = undefined,
+  style = {},
 }) => {
   const containerRef = useRef(null);
   const [maxVisible, setMaxVisible] = useState(1);
@@ -296,7 +297,7 @@ const MultiSelectDropdown = ({
   const showRequiredError = required && (!selected || selected.length === 0);
   return (
     <div
-      style={{ width: "100%" }}
+      style={{ width: "100%", ...style }}
       ref={containerRef}
       className={showRequiredError ? "select-required-error" : ""}
     >
