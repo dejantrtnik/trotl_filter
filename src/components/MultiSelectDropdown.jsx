@@ -14,6 +14,7 @@ const MultiSelectDropdown = ({
   addItem = undefined,
   style = {},
   allowClear = false,
+  disabled = false,
 }) => {
   const containerRef = useRef(null);
   const [maxVisible, setMaxVisible] = useState(1);
@@ -119,6 +120,7 @@ const MultiSelectDropdown = ({
   }, [options, inputValue, inputExists, addItem]);
 
   const handleAddNew = () => {
+    if (disabled) return;
     if (!inputValue.trim()) return;
     const newLabel = inputValue.trim();
     // Prevent duplicate by value or label (case-insensitive)
@@ -172,6 +174,7 @@ const MultiSelectDropdown = ({
   };
 
   const handleChange = (selectedItems) => {
+    if (disabled) return;
     if (isMulti) {
       const values = selectedItems ? selectedItems.map((item) => item.value) : [];
       onChange(values);
@@ -298,16 +301,19 @@ const MultiSelectDropdown = ({
   const showRequiredError = required && (!selected || selected.length === 0);
   return (
     <div
-      style={{ width: "100%", ...style }}
+      style={{ width: "100%", ...style, ...(disabled ? { opacity: 0.6 } : {}) }}
       ref={containerRef}
       className={showRequiredError ? "select-required-error" : ""}
+      aria-disabled={disabled}
     >
       <Select
         isMulti={isMulti}
         isClearable={allowClear}
+        isDisabled={disabled}
         options={menuOptions}
         value={selectedOptions}
         onChange={(val, action) => {
+          if (disabled) return;
           // If user selects the +Add option, handle it
           if (action && action.action === 'select-option' && val && val.length && val[val.length-1]?.__isAddNew) {
             handleAddNew();
@@ -323,6 +329,7 @@ const MultiSelectDropdown = ({
         aria-required={required}
         inputValue={inputValue}
         onInputChange={(val, action) => {
+          if (disabled) return;
           if (action.action === "input-change") setInputValue(val);
         }}
       />
