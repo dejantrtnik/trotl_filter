@@ -57,10 +57,11 @@ export default function App() {
       <div style={{ display: "flex", gap: "1rem" }}>
 
         <MultiSelectDropdown
+          allowClear={true}
           style={{ border: "2px solid red" }}
 
           className="multi-select-dropdown"
-          isMulti={true}
+          // isMulti={true}
           label={"components"}
           options={uniqueOptions}
           // addItem={(newOption) => console.log(newOption)}

@@ -13,6 +13,7 @@ const MultiSelectDropdown = ({
   pushUrlParamObj = false, // pushUrlParamObj={"ids"}
   addItem = undefined,
   style = {},
+  allowClear = false,
 }) => {
   const containerRef = useRef(null);
   const [maxVisible, setMaxVisible] = useState(1);
@@ -303,6 +304,7 @@ const MultiSelectDropdown = ({
     >
       <Select
         isMulti={isMulti}
+        isClearable={allowClear}
         options={menuOptions}
         value={selectedOptions}
         onChange={(val, action) => {
