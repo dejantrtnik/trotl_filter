@@ -15,6 +15,8 @@ const DebounceSelect = ({
   pushUrlParamObj = false,
   addItem = undefined,
   fetchAll = true,
+  // external loading prop (won't clash with internal state named `loading`)
+  loading: loadingProp = false,
   t
 }) => {
   let translate
@@ -90,6 +92,9 @@ const DebounceSelect = ({
   // }, [pushUrlParamObj, isMulti, selectedItems, onSelect]);
 
   const timeoutRef = useRef(null);
+
+  const showSpinner = (loading || loadingProp) && !disabled;
+  const showClear = (input || (!isMulti && selectedItems.length > 0)) && !disabled;
 
   useEffect(() => {
     if (!input) {
@@ -233,13 +238,37 @@ const DebounceSelect = ({
           disabled={disabled}
           style={style}
         />
-        {(input || (!isMulti && selectedItems.length > 0)) && !disabled && (
+        {/* Spinner on the right when loading (internal or prop), clear button shifted left */}
+        {showSpinner && (
+          <div
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              right: 6,
+              width: 20,
+              height: 20,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              pointerEvents: 'none',
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+              <g>
+                <circle cx="25" cy="25" r="20" stroke="#888" strokeWidth="4" strokeLinecap="round" fill="none" strokeDasharray="31.4 31.4" />
+                <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 25 25" to="360 25 25" dur="0.9s" repeatCount="indefinite" />
+              </g>
+            </svg>
+          </div>
+        )}
+
+        {showClear && (
           <button
             type="button"
             aria-label="Clear"
             style={{
               position: 'absolute',
-              right: 6,
+              right: showSpinner ? 30 : 6,
               background: 'none',
               border: 'none',
               cursor: 'pointer',

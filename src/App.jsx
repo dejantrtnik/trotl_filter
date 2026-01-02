@@ -57,11 +57,11 @@ export default function App() {
       <div style={{ display: "flex", gap: "1rem" }}>
 
         <MultiSelectDropdown
+          loading={false}
           allowClear={true}
           style={{ border: "2px solid red" }}
-
           className="multi-select-dropdown"
-          // isMulti={true}
+          isMulti={true}
           label={"components"}
           options={uniqueOptions}
           // addItem={(newOption) => console.log(newOption)}
@@ -109,6 +109,7 @@ export default function App() {
         />
 
         <DebounceSelect
+          loading={false}
           fetchOptions={fetchUsers}
           placeholder="Select a user"
           // objValue={formData.product}

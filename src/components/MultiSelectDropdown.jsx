@@ -15,6 +15,8 @@ const MultiSelectDropdown = ({
   style = {},
   allowClear = false,
   disabled = false,
+  // external loading prop
+  loading: loadingProp = false,
 }) => {
   const containerRef = useRef(null);
   const [maxVisible, setMaxVisible] = useState(1);
@@ -240,6 +242,7 @@ const MultiSelectDropdown = ({
       boxShadow: "none",
       borderRadius: 2,
       cursor: "pointer",
+      paddingRight: showSpinner ? 36 : base.paddingRight,
     }),
     menu: (base) => ({
       ...base,
@@ -298,10 +301,12 @@ const MultiSelectDropdown = ({
     }),
   };
 
+  const showSpinner = loadingProp && !disabled;
+
   const showRequiredError = required && (!selected || selected.length === 0);
   return (
     <div
-      style={{ width: "100%", ...style, ...(disabled ? { opacity: 0.6 } : {}) }}
+      style={{ width: "100%", position: 'relative', ...style, ...(disabled ? { opacity: 0.6 } : {}) }}
       ref={containerRef}
       className={showRequiredError ? "select-required-error" : ""}
       aria-disabled={disabled}
@@ -333,6 +338,30 @@ const MultiSelectDropdown = ({
           if (action.action === "input-change") setInputValue(val);
         }}
       />
+      {showSpinner && (
+        <div
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            right: 8,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: 20,
+            height: 20,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            pointerEvents: 'none',
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+            <g>
+              <circle cx="25" cy="25" r="20" stroke="#888" strokeWidth="4" strokeLinecap="round" fill="none" strokeDasharray="31.4 31.4" />
+              <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 25 25" to="360 25 25" dur="0.9s" repeatCount="indefinite" />
+            </g>
+          </svg>
+        </div>
+      )}
       {showRequiredError && (
         <div className="error-text">This field is required.</div>
       )}
