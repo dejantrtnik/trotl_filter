@@ -191,6 +191,7 @@ const createRangeFromSimple = (item, time) => {
 };
 
 export default function RangePicker({
+  t,
   pushUrlParamObj = false,
   value: controlledValue,
   onChange,
@@ -211,6 +212,19 @@ export default function RangePicker({
   startWith = "sunday",
   ...rest
 }) {
+  let translate
+  if (t) {
+    translate = t
+  } else {
+    translate = (key) => {
+      const translations = {
+        clear: "Clear",
+        ok: "OK",
+        today: "Today"
+      };
+      return translations[key] || key;
+    }
+  }
   const paramKey = pushUrlParamObj || null;
   
   // Convert simple predefinedRanges to full format
@@ -670,7 +684,7 @@ export default function RangePicker({
                   fontSize: 13
                 }}
               >
-                Clear
+                {translate("clear")}
               </button>
               <button
                 type="button"
@@ -686,7 +700,7 @@ export default function RangePicker({
                   fontWeight: 500
                 }}
               >
-                OK
+                {translate("ok")}
               </button>
             </div>
           </div>

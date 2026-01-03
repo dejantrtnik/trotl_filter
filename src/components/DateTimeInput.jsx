@@ -10,6 +10,7 @@ import PropTypes from "prop-types";
  *  - Clear & OK footer actions
  */
 export default function DateTimeInput({
+  t,
   pushUrlParamObj = false,
   value: controlledValue,
   onChange,
@@ -26,6 +27,20 @@ export default function DateTimeInput({
   startWith = "sunday",
   ...rest
 }) {
+  let translate
+  if (t) {
+    translate = t
+  } else {
+    translate = (key) => {
+      const translations = {
+        clear: "Clear",
+        ok: "OK",
+        today: "Today"
+      };
+      return translations[key] || key;
+    }
+  }
+
   const paramKey = pushUrlParamObj || null;
 
   // Helper: convert timestamp (number|string) to internal input string
@@ -81,7 +96,7 @@ export default function DateTimeInput({
         label: `-${item}d`,
         getDate: () => {
           const d = new Date();
-          d.setHours(0,0,0,0);
+          d.setHours(0, 0, 0, 0);
           d.setDate(d.getDate() - item);
           return d;
         }
@@ -92,14 +107,14 @@ export default function DateTimeInput({
       return {
         key: 'today',
         label: 'Today',
-        getDate: () => { const d=new Date(); d.setHours(0,0,0,0); return d; }
+        getDate: () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; }
       };
     }
     if (str === 'yesterday') {
       return {
         key: 'yesterday',
         label: 'Yesterday',
-        getDate: () => { const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-1); return d; }
+        getDate: () => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - 1); return d; }
       };
     }
     if (str === 'lastweek') {
@@ -107,8 +122,8 @@ export default function DateTimeInput({
         key: 'lastweek',
         label: 'Last week (Mon)',
         getDate: () => { // Monday of previous week
-          const d=new Date();
-          d.setHours(0,0,0,0);
+          const d = new Date();
+          d.setHours(0, 0, 0, 0);
           const day = d.getDay(); // 0 Sun..6 Sat
           const mondayOffset = day === 0 ? -6 : 1 - day; // days to monday this week
           d.setDate(d.getDate() + mondayOffset - 7); // previous week's Monday
@@ -120,27 +135,27 @@ export default function DateTimeInput({
       return {
         key: 'lastmonth',
         label: 'First day last month',
-        getDate: () => { const d=new Date(); d.setHours(0,0,0,0); d.setMonth(d.getMonth()-1,1); return d; }
+        getDate: () => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setMonth(d.getMonth() - 1, 1); return d; }
       };
     }
     if (str === 'thismonth') {
       return {
         key: 'thismonth',
         label: 'First day this month',
-        getDate: () => { const d=new Date(); d.setHours(0,0,0,0); d.setDate(1); return d; }
+        getDate: () => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(1); return d; }
       };
     }
     if (str === 'lastyear') {
       return {
         key: 'lastyear',
         label: 'Jan 1 last year',
-        getDate: () => { const d=new Date(); d.setHours(0,0,0,0); d.setFullYear(d.getFullYear()-1,0,1); return d; }
+        getDate: () => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setFullYear(d.getFullYear() - 1, 0, 1); return d; }
       };
     }
     return {
       key: str,
       label: item,
-      getDate: () => { const d=new Date(); d.setHours(0,0,0,0); return d; }
+      getDate: () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; }
     };
   }, []);
   const PREDEFINED = useMemo(() => predefinedRanges.map(createPredefinedItem), [predefinedRanges, createPredefinedItem]);
@@ -172,7 +187,7 @@ export default function DateTimeInput({
     // Match predefined
     if (selectedDate) {
       const ts = selectedDate.getTime();
-      for (let i=0;i<PREDEFINED.length;i++) {
+      for (let i = 0; i < PREDEFINED.length; i++) {
         const d = PREDEFINED[i].getDate();
         if (d.getTime() === ts) { setSelectedPredefined(String(i)); return; }
       }
@@ -234,7 +249,7 @@ export default function DateTimeInput({
     window.addEventListener('popstate', syncFromUrl);
     const patchHistory = (type) => {
       const orig = window.history[type];
-      window.history[type] = function() {
+      window.history[type] = function () {
         const rv = orig.apply(this, arguments);
         window.dispatchEvent(new Event(type));
         return rv;
@@ -297,7 +312,7 @@ export default function DateTimeInput({
     const item = PREDEFINED[idx];
     const d = item.getDate();
     if (time && timeStart) {
-      const [h,m] = (timeStart||"00:00").split(":");
+      const [h, m] = (timeStart || "00:00").split(":");
       d.setHours(Number(h), Number(m), 0, 0);
     }
     applySelection(d);
@@ -380,8 +395,9 @@ export default function DateTimeInput({
         >
           {/* Quick buttons */}
           {PREDEFINED.length > 0 && (
-            <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:8 }}>
-              {PREDEFINED.map((p,i) => {
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+              {PREDEFINED.map((p, i) => {
+                console.log(p)
                 const active = selectedPredefined === String(i);
                 return (
                   <button
@@ -390,8 +406,8 @@ export default function DateTimeInput({
                     onClick={() => handlePredefinedClick(i)}
                     className="basic-btn"
                     style={{
-                      padding:'4px 8px',
-                      fontSize:12,
+                      padding: '4px 8px',
+                      fontSize: 12,
                       background: active ? '#1677ff' : '#fff',
                       color: active ? '#fff' : '#000',
                       border: active ? '1px solid #1677ff' : '1px solid #d9d9d9'
@@ -410,8 +426,8 @@ export default function DateTimeInput({
           {/* Week headers */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', fontSize: 12, marginBottom: 4, opacity: 0.8 }}>
             {(startWith === "monday"
-              ? ['Mo','Tu','We','Th','Fr','Sa','Su']
-              : ['Su','Mo','Tu','We','Th','Fr','Sa']
+              ? ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
+              : ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
             ).map(d => <div key={d} style={{ textAlign: 'center' }}>{d}</div>)}
           </div>
           {/* Days grid */}
@@ -419,7 +435,7 @@ export default function DateTimeInput({
             {days.map(d => {
               const isCurrentMonth = d.getMonth() === monthCursor.getMonth();
               const isSelected = selectedDate && d.getFullYear() === selectedDate.getFullYear() && d.getMonth() === selectedDate.getMonth() && d.getDate() === selectedDate.getDate();
-              const isToday = (() => { const t=new Date(); return t.getFullYear()===d.getFullYear() && t.getMonth()===d.getMonth() && t.getDate()===d.getDate(); })();
+              const isToday = (() => { const t = new Date(); return t.getFullYear() === d.getFullYear() && t.getMonth() === d.getMonth() && t.getDate() === d.getDate(); })();
               return (
                 <div
                   key={d.toISOString()}
@@ -439,25 +455,25 @@ export default function DateTimeInput({
             })}
           </div>
           {/* Time input */}
-            {time && (
-              <div style={{ marginTop: 10 }}>
-                <label style={{ fontSize: 12, display: 'block', marginBottom: 4 }}>Time:</label>
-                <input
-                  type="time"
-                  value={(() => { if (!value) return ''; const d=new Date(value); const hh=String(d.getHours()).padStart(2,'0'); const mm=String(d.getMinutes()).padStart(2,'0'); return `${hh}:${mm}`; })()}
-                  onChange={handleTimeChange}
-                  className="basic-input"
-                  style={{ width: '100%' }}
-                />
-              </div>
-            )}
+          {time && (
+            <div style={{ marginTop: 10 }}>
+              <label style={{ fontSize: 12, display: 'block', marginBottom: 4 }}>Time:</label>
+              <input
+                type="time"
+                value={(() => { if (!value) return ''; const d = new Date(value); const hh = String(d.getHours()).padStart(2, '0'); const mm = String(d.getMinutes()).padStart(2, '0'); return `${hh}:${mm}`; })()}
+                onChange={handleTimeChange}
+                className="basic-input"
+                style={{ width: '100%' }}
+              />
+            </div>
+          )}
           {/* Footer actions */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
             <div style={{ display: 'flex', gap: 8 }}>
-              <button type="button" className="basic-btn" onClick={() => { handleClear(); }}>Clear</button>
-              <button type="button" className="basic-btn" onClick={() => { setOpen(false); }}>OK</button>
+              <button style={buttonClearStyle} type="button" className="basic-btn" onClick={() => { handleClear(); }}>{translate("clear")}</button>
+              <button style={buttonStyle} type="button" className="basic-btn" onClick={() => { setOpen(false); }}>{translate("ok")}</button>
             </div>
-            <button type="button" className="basic-btn" onClick={() => { handlePredefinedClick(PREDEFINED.findIndex(p=>p.key==='today')); }}>Today</button>
+            <button style={buttonStyle} type="button" className="basic-btn" onClick={() => { handlePredefinedClick(PREDEFINED.findIndex(p => p.key === 'today')); }}>{translate("today")}</button>
           </div>
         </div>
       )}
@@ -480,3 +496,24 @@ DateTimeInput.propTypes = {
   style: PropTypes.object,
   predefinedRanges: PropTypes.array,
 };
+
+const buttonStyle = {
+  padding: '6px 16px',
+  border: 'none',
+  background: '#1d4ed8',
+  color: '#fff',
+  borderRadius: 4,
+  cursor: 'pointer',
+  fontSize: 13,
+  fontWeight: 500
+};
+
+const buttonClearStyle = {
+  // marginRight: 8,
+  padding: '6px 16px',
+  border: '1px solid #d1d5db',
+  background: '#fff',
+  borderRadius: 4,
+  cursor: 'pointer',
+  fontSize: 13
+}
