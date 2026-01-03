@@ -18,6 +18,7 @@ yarn add trotl-filter
 ```js
 \_(ツ)_/ Versions
 
+1.0.17 => add disabled prop to RangePicker, DateTimeInput
 1.0.16 => ...
 1.0.15 => add languge to date components
 1.0.14 => add loading spinner into input

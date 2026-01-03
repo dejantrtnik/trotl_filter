@@ -384,6 +384,7 @@ export default function RangePicker({
   const handleChange = (which) => (e) => {
     const newVal = e.target.value;
     const newRange = which === 'start' ? [newVal, range[1]] : [range[0], newVal];
+    if (disabled) return;
     if (!controlledValue) setRange(newRange);
     setUrlParam(newRange);
     setSelectedRange("");
@@ -392,6 +393,7 @@ export default function RangePicker({
 
   // Handle predefined range select
   const handlePredefinedChange = (e) => {
+    if (disabled) return;
     const idx = e.target.value;
     if (idx === "") return;
     const { getRange } = PREDEFINED_RANGES[idx];
@@ -413,6 +415,7 @@ export default function RangePicker({
 
   // Update time while keeping the selected date
   const handleTimeChange = (which) => (e) => {
+    if (disabled) return;
     const newTime = e.target.value;
     const currentVal = which === 'start' ? range[0] : range[1];
     const datePart = (currentVal && currentVal.split('T')[0]) || formatDate(new Date(), false);
@@ -425,6 +428,7 @@ export default function RangePicker({
   };
 
   const handleClear = () => {
+    if (disabled) return;
     if (!controlledValue) setRange(["", ""]);
     setUrlParam(["", ""]);
     onChange?.(["", ""]);
@@ -518,10 +522,10 @@ export default function RangePicker({
       <div style={{ position: "relative", flex: 1 }}>
         <div
           className="basic-input"
-          onClick={() => setDropdownOpen(!dropdownOpen)}
+          onClick={() => !disabled && setDropdownOpen(!dropdownOpen)}
           style={{
-            cursor: "pointer",
-            background: dropdownOpen ? "#f0f8ff" : "#fff",
+            cursor: disabled ? 'not-allowed' : 'pointer',
+            background: disabled ? '#f3f4f6' : (dropdownOpen ? "#f0f8ff" : "#fff"),
             height: 34,
             minHeight: 34,
             width: 300,
@@ -534,11 +538,11 @@ export default function RangePicker({
             fontSize: 14
           }}
         >
-          <span style={{ color: formatDisplay().start ? '#333' : '#999', flex: 1 }}>
+          <span style={{ color: disabled ? '#9ca3af' : (formatDisplay().start ? '#333' : '#999'), flex: 1 }}>
             {formatDisplay().start || 'Start date'}
           </span>
           <span style={{ padding: '0 8px', color: '#999' }}>→</span>
-          <span style={{ color: formatDisplay().end ? '#333' : '#999', flex: 1 }}>
+          <span style={{ color: disabled ? '#9ca3af' : (formatDisplay().end ? '#333' : '#999'), flex: 1 }}>
             {formatDisplay().end || 'End date'}
           </span>
           <span style={{
@@ -547,7 +551,7 @@ export default function RangePicker({
             top: '50%',
             transform: 'translateY(-51%)',
             fontSize: 16,
-            color: '#666'
+            color: disabled ? '#9ca3af' : '#666'
           }}>
             📅
           </span>
@@ -567,6 +571,7 @@ export default function RangePicker({
             <CalendarRangePicker
               startDate={range[0] ? new Date(range[0]) : null}
               endDate={range[1] ? new Date(range[1]) : null}
+              disabled={disabled}
               onChange={(start, end) => {
                 const toStr = (d) => {
                   if (!d) return "";
@@ -585,6 +590,7 @@ export default function RangePicker({
                   }
                 };
                 const newRange = [toStr(start), toStr(end)];
+                if (disabled) return;
                 if (!controlledValue) setRange(newRange);
                 setUrlParam(newRange);
                 onChange?.(newRange);
@@ -602,6 +608,7 @@ export default function RangePicker({
                     type="time"
                     value={getTimeValue('start')}
                     onChange={handleTimeChange('start')}
+                    disabled={disabled}
                     style={{
                       width: '100%',
                       padding: '4px 6px',
@@ -617,6 +624,7 @@ export default function RangePicker({
                     type="time"
                     value={getTimeValue('end')}
                     onChange={handleTimeChange('end')}
+                    disabled={disabled}
                     style={{
                       width: '100%',
                       padding: '4px 6px',
@@ -645,6 +653,7 @@ export default function RangePicker({
                       key={r.label}
                       type="button"
                       onClick={() => {
+                        if (disabled) return;
                         const { getRange } = r;
                         const newRange = getRange(time);
                         if (!controlledValue) setRange(newRange);
@@ -652,11 +661,12 @@ export default function RangePicker({
                         setSelectedRange(String(i));
                         onChange?.(newRange);
                       }}
+                      disabled={disabled}
                       style={{
                         padding: '4px 12px',
                         border: isActive ? '1px solid #1d4ed8' : '1px solid #d1d5db',
-                        background: isActive ? '#e0f2fe' : '#fff',
-                        color: isActive ? '#1d4ed8' : '#333',
+                        background: isActive ? (disabled ? '#f3f4f6' : '#e0f2fe') : (disabled ? '#f9fafb' : '#fff'),
+                        color: isActive ? (disabled ? '#9ca3af' : '#1d4ed8') : (disabled ? '#9ca3af' : '#333'),
                         borderRadius: 4,
                         cursor: 'pointer',
                         fontSize: 12,
@@ -674,11 +684,12 @@ export default function RangePicker({
               <button
                 type="button"
                 onClick={handleClear}
+                disabled={disabled}
                 style={{
                   marginRight: 8,
                   padding: '6px 16px',
-                  border: '1px solid #d1d5db',
-                  background: '#fff',
+                  border: disabled ? '1px solid #e5e7eb' : '1px solid #d1d5db',
+                  background: disabled ? '#f9fafb' : '#fff',
                   borderRadius: 4,
                   cursor: 'pointer',
                   fontSize: 13
@@ -688,11 +699,12 @@ export default function RangePicker({
               </button>
               <button
                 type="button"
-                onClick={() => setDropdownOpen(false)}
+                onClick={() => !disabled && setDropdownOpen(false)}
+                disabled={disabled}
                 style={{
                   padding: '6px 16px',
                   border: 'none',
-                  background: '#1d4ed8',
+                  background: disabled ? '#93c5fd' : '#1d4ed8',
                   color: '#fff',
                   borderRadius: 4,
                   cursor: 'pointer',

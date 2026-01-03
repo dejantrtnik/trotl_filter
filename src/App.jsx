@@ -84,6 +84,7 @@ export default function App() {
           pushUrlParamObj={"rangeTime"}
           predefinedRanges={["Today", "yesterday", "lastweek", 7, 30, "thismonth", "lastyear"]}
           startWith={"monday"}
+          disabled={true}
         />
  
 
@@ -97,6 +98,7 @@ export default function App() {
           pushUrlParamObj={"datetime"}
           predefinedRanges={['today', 'yesterday', 'lastweek', 7, 'thismonth', 'lastyear']}
           startWith={"monday"}
+          disabled={true}
         />
 
         <IconInput

@@ -361,7 +361,9 @@ export default function DateTimeInput({
           padding: '6px 8px',
           minWidth: 180,
           userSelect: 'none',
-          position: 'relative'
+          position: 'relative',
+          background: disabled ? '#f3f4f6' : undefined,
+          color: disabled ? '#9ca3af' : undefined
         }}
         data-timestart={timeStart || undefined}
         data-timezone={timezone || undefined}
@@ -371,9 +373,9 @@ export default function DateTimeInput({
         {formatDisplay() || placeholder}
         {value && (
           <span
-            onClick={(e) => { e.stopPropagation(); handleClear(); }}
+            onClick={(e) => { e.stopPropagation(); if (!disabled) handleClear(); }}
             title="Clear date"
-            style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', fontSize: 12, cursor: 'pointer' }}
+            style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', fontSize: 12, cursor: disabled ? 'not-allowed' : 'pointer', color: disabled ? '#9ca3af' : undefined }}
           >✖</span>
         )}
       </div>
@@ -402,14 +404,16 @@ export default function DateTimeInput({
                   <button
                     key={p.key}
                     type="button"
-                    onClick={() => handlePredefinedClick(i)}
+                    onClick={() => !disabled && handlePredefinedClick(i)}
+                    disabled={disabled}
                     className="basic-btn"
                     style={{
                       padding: '4px 8px',
                       fontSize: 12,
-                      background: active ? '#1677ff' : '#fff',
-                      color: active ? '#fff' : '#000',
-                      border: active ? '1px solid #1677ff' : '1px solid #d9d9d9'
+                      background: disabled ? (active ? '#f3f4f6' : '#f9fafb') : (active ? '#1677ff' : '#fff'),
+                      color: disabled ? '#9ca3af' : (active ? '#fff' : '#000'),
+                      border: disabled ? '1px solid #e5e7eb' : (active ? '1px solid #1677ff' : '1px solid #d9d9d9'),
+                      cursor: disabled ? 'not-allowed' : 'pointer'
                     }}
                   >{p.label}</button>
                 );
@@ -418,9 +422,9 @@ export default function DateTimeInput({
           )}
           {/* Month navigation */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <button type="button" className="basic-btn" onClick={() => setMonthCursor(new Date(monthCursor.getFullYear(), monthCursor.getMonth() - 1, 1))}>‹</button>
+            <button type="button" className="basic-btn" onClick={() => !disabled && setMonthCursor(new Date(monthCursor.getFullYear(), monthCursor.getMonth() - 1, 1))} disabled={disabled} style={{ cursor: disabled ? 'not-allowed' : undefined }}>‹</button>
             <div style={{ fontWeight: 600 }}>{monthCursor.toLocaleString(undefined, { month: 'long' })} {monthCursor.getFullYear()}</div>
-            <button type="button" className="basic-btn" onClick={() => setMonthCursor(new Date(monthCursor.getFullYear(), monthCursor.getMonth() + 1, 1))}>›</button>
+            <button type="button" className="basic-btn" onClick={() => !disabled && setMonthCursor(new Date(monthCursor.getFullYear(), monthCursor.getMonth() + 1, 1))} disabled={disabled} style={{ cursor: disabled ? 'not-allowed' : undefined }}>›</button>
           </div>
           {/* Week headers */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', fontSize: 12, marginBottom: 4, opacity: 0.8 }}>
@@ -438,15 +442,15 @@ export default function DateTimeInput({
               return (
                 <div
                   key={d.toISOString()}
-                  onClick={() => handleDayClick(d)}
+                  onClick={() => !disabled && handleDayClick(d)}
                   style={{
                     textAlign: 'center',
                     padding: '6px 0',
-                    cursor: 'pointer',
+                    cursor: disabled ? 'default' : 'pointer',
                     fontSize: 12,
                     borderRadius: 4,
-                    background: isSelected ? '#1677ff' : isToday ? '#e6f4ff' : 'transparent',
-                    color: isSelected ? '#fff' : isCurrentMonth ? '#000' : '#aaa',
+                    background: isSelected ? (disabled ? '#c7ddff' : '#1677ff') : isToday ? '#e6f4ff' : 'transparent',
+                    color: disabled ? '#9ca3af' : (isSelected ? '#fff' : isCurrentMonth ? '#000' : '#aaa'),
                     border: isSelected ? '1px solid #1677ff' : '1px solid transparent'
                   }}
                 >{d.getDate()}</div>
@@ -456,23 +460,24 @@ export default function DateTimeInput({
           {/* Time input */}
           {time && (
             <div style={{ marginTop: 10 }}>
-              <label style={{ fontSize: 12, display: 'block', marginBottom: 4 }}>Time:</label>
+              <label style={{ fontSize: 12, display: 'block', marginBottom: 4, color: disabled ? '#9ca3af' : undefined }}>Time:</label>
               <input
                 type="time"
                 value={(() => { if (!value) return ''; const d = new Date(value); const hh = String(d.getHours()).padStart(2, '0'); const mm = String(d.getMinutes()).padStart(2, '0'); return `${hh}:${mm}`; })()}
                 onChange={handleTimeChange}
                 className="basic-input"
-                style={{ width: '100%' }}
+                disabled={disabled}
+                style={{ width: '100%', background: disabled ? '#f9fafb' : undefined, color: disabled ? '#9ca3af' : undefined }}
               />
             </div>
           )}
           {/* Footer actions */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
             <div style={{ display: 'flex', gap: 8 }}>
-              <button style={buttonClearStyle} type="button" className="basic-btn" onClick={() => { handleClear(); }}>{translate("clear")}</button>
-              <button style={buttonStyle} type="button" className="basic-btn" onClick={() => { setOpen(false); }}>{translate("ok")}</button>
+              <button style={{ ...buttonClearStyle, border: disabled ? '1px solid #e5e7eb' : buttonClearStyle.border, background: disabled ? '#f9fafb' : buttonClearStyle.background, cursor: disabled ? 'not-allowed' : buttonClearStyle.cursor }} type="button" className="basic-btn" onClick={() => { if (!disabled) handleClear(); }} disabled={disabled}>{translate("clear")}</button>
+              <button style={{ ...buttonStyle, background: disabled ? '#93c5fd' : buttonStyle.background, cursor: disabled ? 'not-allowed' : buttonStyle.cursor }} type="button" className="basic-btn" onClick={() => { if (!disabled) setOpen(false); }} disabled={disabled}>{translate("ok")}</button>
             </div>
-            <button style={buttonStyle} type="button" className="basic-btn" onClick={() => { handlePredefinedClick(PREDEFINED.findIndex(p => p.key === 'today')); }}>{translate("today")}</button>
+            <button style={{ ...buttonStyle, background: disabled ? '#93c5fd' : buttonStyle.background, cursor: disabled ? 'not-allowed' : buttonStyle.cursor }} type="button" className="basic-btn" onClick={() => { if (!disabled) handlePredefinedClick(PREDEFINED.findIndex(p => p.key === 'today')); }} disabled={disabled}>{translate("today")}</button>
           </div>
         </div>
       )}
