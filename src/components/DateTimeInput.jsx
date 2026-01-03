@@ -397,7 +397,6 @@ export default function DateTimeInput({
           {PREDEFINED.length > 0 && (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
               {PREDEFINED.map((p, i) => {
-                console.log(p)
                 const active = selectedPredefined === String(i);
                 return (
                   <button
