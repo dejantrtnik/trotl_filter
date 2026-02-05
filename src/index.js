@@ -1,4 +1,5 @@
 // src/index.js
+import "./index.css";
 import MultiSelectDropdown from "./components/MultiSelectDropdown.jsx";
 import DebounceSelect from "./components/DebounceSelect.jsx";
 import SearchInput from "./components/SearchInput.jsx";
