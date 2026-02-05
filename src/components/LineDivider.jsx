@@ -11,15 +11,15 @@ const LineDivider = ({
   const getLayout = () => {
     switch (position) {
       case 'left':
-        return { leftFlex: 0, rightFlex: 1, justify: 'flex-start' };
+        return { leftFlex: 0, rightFlex: 1, justify: 'flex-start', gap: 12 };
       case 'right':
-        return { leftFlex: 1, rightFlex: 0, justify: 'flex-end' };
+        return { leftFlex: 1, rightFlex: 0, justify: 'flex-end', gap: 12 };
       default:
-        return { leftFlex: 1, rightFlex: 1, justify: 'center' };
+        return { leftFlex: 1, rightFlex: 1, justify: 'center', gap: 12 };
     }
   };
 
-  const { leftFlex, rightFlex, justify } = getLayout();
+  const { leftFlex, rightFlex, justify, gap } = getLayout();
 
   return (
     <div style={{ margin }}>
@@ -29,10 +29,10 @@ const LineDivider = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: justify,
-            gap: 12,
+            gap: gap,
           }}
         >
-          <div style={{ flex: leftFlex, height: thickness, backgroundColor: color }} />
+          {leftFlex > 0 && <div style={{ flex: leftFlex, height: thickness, backgroundColor: color }} />}
           <span
             style={{
               whiteSpace: 'nowrap',
@@ -42,7 +42,7 @@ const LineDivider = ({
           >
             {text}
           </span>
-          <div style={{ flex: rightFlex, height: thickness, backgroundColor: color }} />
+          {rightFlex > 0 && <div style={{ flex: rightFlex, height: thickness, backgroundColor: color }} />}
         </div>
       ) : (
         // Full-width line when no text
