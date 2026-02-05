@@ -111,7 +111,8 @@ export default function App() {
         />
 
         <SearchInput
-          pushUrlParamObj={"search"}
+          // height={20}
+          // pushUrlParamObj={"search"}
         />
 
         <DebounceSelect

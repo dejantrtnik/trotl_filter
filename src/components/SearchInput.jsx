@@ -1,12 +1,19 @@
 import React from "react";
 
-
-export default function SearchInput({ pushUrlParamObj = null, ...props }) {
+/**
+ * SearchInput Component
+ * @param {string} pushUrlParamObj - URL parameter key (if null, URL params are not updated)
+ * @param {string} height - Input height (e.g., "40px", "3rem")
+ * @param {object} style - Custom inline styles
+ */
+export default function SearchInput({ pushUrlParamObj = null, height, style = {}, ...props }) {
   const key = pushUrlParamObj || "search";
   const [value, setValue] = React.useState("");
 
   // On mount, read the URL param and set value
   React.useEffect(() => {
+    if (pushUrlParamObj === null) return;
+    
     const params = new URLSearchParams(window.location.search);
     const urlValue = params.get(key) || "";
     setValue(urlValue);
@@ -18,9 +25,11 @@ export default function SearchInput({ pushUrlParamObj = null, ...props }) {
     };
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
-  }, [key]);
+  }, [key, pushUrlParamObj]);
 
   const setUrlParam = (val) => {
+    if (pushUrlParamObj === null) return;
+    
     const params = new URLSearchParams(window.location.search);
     if (val && val.length > 0) {
       params.set(key, val);
@@ -42,15 +51,19 @@ export default function SearchInput({ pushUrlParamObj = null, ...props }) {
     setUrlParam("");
   };
 
+  // Apply height to container if provided and style doesn't have height defined
+  const containerStyle = {
+    position: "relative",
+    display: "inline-block",
+    height: height || "34px",
+    verticalAlign: "middle",
+    ...style
+  };
+
   return (
     <div
       title={"tooltip"}
-      style={{
-        position: "relative",
-        display: "inline-block",
-        height: "34px",
-        verticalAlign: "middle"
-      }}
+      style={containerStyle}
     >
       <input
         className="basic-input"
