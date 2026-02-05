@@ -8,7 +8,9 @@ import RangePicker from "./components/RangePicker.jsx";
 import CalendarRangePicker from "./components/CalendarRangePicker.jsx";
 import LineDivider from "./components/LineDivider.jsx";
 import Button from "./components/Button.jsx";
+import "./components/Button.css";
 import Switch from "./components/Switch.jsx";
+import "./components/Switch.css";
 // export default Filter;   // if you want default import
 export {
   MultiSelectDropdown,
