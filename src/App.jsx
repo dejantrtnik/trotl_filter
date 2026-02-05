@@ -10,7 +10,8 @@ import {
   RangePicker,
   CalendarRangePicker,
   LineDivider,
-  Button
+  Button,
+  Switch
 } from "./index.js";
 
 
@@ -36,7 +37,8 @@ export default function App() {
 
   const [formData, setFormData] = useState({
     components: [],
-    inputValue: ""
+    inputValue: "",
+    switchEnabled: false
   });
 
   // Simulate fetching users with debounce
@@ -88,7 +90,7 @@ export default function App() {
           startWith={"monday"}
           disabled={false}
         />
- 
+
 
         <DateTimeInput
           time={true}
@@ -162,8 +164,18 @@ export default function App() {
         type="custom" // ok, cancel, delete, custom (null)
         style={{ width: 200, color: "" }}
         onClick={() => alert("Button clicked!")}>
-Login
+        Login
       </Button>
+
+      <Switch
+        checked={formData.switchEnabled}
+        onChange={(value) => setFormData({ ...formData, switchEnabled: value })}
+        disabled={false}
+        label="Enable Feature"
+        size="medium" // small, medium, large
+        style={{}}
+        className=""
+      />
     </div>
   );
 }
