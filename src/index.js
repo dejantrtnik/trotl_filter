@@ -6,6 +6,7 @@ import IconInput from "./components/IconInput.jsx";
 import DateTimeInput from "./components/DateTimeInput.jsx";
 import RangePicker from "./components/RangePicker.jsx";
 import CalendarRangePicker from "./components/CalendarRangePicker.jsx";
+import LineDivider from "./components/LineDivider.jsx";
 // export default Filter;   // if you want default import
 export {
   MultiSelectDropdown,
@@ -14,5 +15,6 @@ export {
   IconInput,
   DateTimeInput,
   RangePicker,
-  CalendarRangePicker
+  CalendarRangePicker,
+  LineDivider
 };

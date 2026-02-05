@@ -8,7 +8,8 @@ import {
   IconInput,
   DateTimeInput,
   RangePicker,
-  CalendarRangePicker
+  CalendarRangePicker,
+  LineDivider
 } from "./index.js";
 
 
@@ -84,7 +85,7 @@ export default function App() {
           pushUrlParamObj={"rangeTime"}
           predefinedRanges={["Today", "yesterday", "lastweek", 7, 30, "thismonth", "lastyear"]}
           startWith={"monday"}
-          disabled={true}
+          disabled={false}
         />
  
 
@@ -98,7 +99,7 @@ export default function App() {
           pushUrlParamObj={"datetime"}
           predefinedRanges={['today', 'yesterday', 'lastweek', 7, 'thismonth', 'lastyear']}
           startWith={"monday"}
-          disabled={true}
+          disabled={false}
         />
 
         <IconInput
@@ -125,6 +126,14 @@ export default function App() {
         <MultiSelectDropdown />
 
       </div>
+
+      <LineDivider
+        text="Line Divider Example"
+        position="center"
+        color="#007bff"
+        thickness={2}
+        margin="30px 0"
+        fontSize={16} />
     </div>
   );
 }
