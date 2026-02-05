@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 
 const LineDivider = ({
   text = '',
@@ -7,6 +7,9 @@ const LineDivider = ({
   thickness = 1,
   margin = '20px 0',
   fontSize = 14,
+  fontWeight = 'normal',
+  fontColor = '#333',
+  style = {},
 }) => {
   const getLayout = () => {
     switch (position) {
@@ -22,7 +25,7 @@ const LineDivider = ({
   const { leftFlex, rightFlex, justify, gap } = getLayout();
 
   return (
-    <div style={{ margin }}>
+    <div style={{ margin, ...style }}>
       {text ? (
         <div
           style={{
@@ -37,7 +40,8 @@ const LineDivider = ({
             style={{
               whiteSpace: 'nowrap',
               fontSize,
-              color: '#333',
+              color: fontColor,
+              fontWeight,
             }}
           >
             {text}

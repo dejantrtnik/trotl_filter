@@ -133,7 +133,10 @@ export default function App() {
         color="#007bff"
         thickness={2}
         margin="30px 0"
-        fontSize={16} />
+        fontSize={16}
+        fontWeight="bold"
+        fontColor="#007bff"
+      />
     </div>
   );
 }
