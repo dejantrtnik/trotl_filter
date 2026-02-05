@@ -9,7 +9,8 @@ import {
   DateTimeInput,
   RangePicker,
   CalendarRangePicker,
-  LineDivider
+  LineDivider,
+  Button
 } from "./index.js";
 
 
@@ -137,6 +138,32 @@ export default function App() {
         fontWeight="bold"
         fontColor="#007bff"
       />
+
+      <Button
+        type="ok" // ok, cancel, delete, custom (null)
+        height={30}
+        onClick={() => alert("Button clicked!")}>
+        Click Me
+      </Button>
+
+      <Button
+        type="cancel" // ok, cancel, delete, custom (null)
+        onClick={() => alert("Button clicked!")}>
+        Click Me
+      </Button>
+
+      <Button
+        type="delete" // ok, cancel, delete, custom (null)
+        onClick={() => alert("Button clicked!")}>
+        Click Me
+      </Button>
+
+      <Button
+        type="custom" // ok, cancel, delete, custom (null)
+        style={{ width: 200, color: "" }}
+        onClick={() => alert("Button clicked!")}>
+Login
+      </Button>
     </div>
   );
 }

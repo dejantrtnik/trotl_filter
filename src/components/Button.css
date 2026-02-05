@@ -1,0 +1,68 @@
+.button {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* OK Button - Blue */
+.btn-ok {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-ok:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+/* Cancel Button - Red */
+.btn-cancel {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background-color: #c82333;
+}
+
+/* Delete Button - Red */
+.btn-delete {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-delete:hover:not(:disabled) {
+  background-color: #c82333;
+}
+
+/* Custom Button - Light Grey */
+.btn-custom {
+  background-color: #e7e7e7;
+  color: #000000;
+}
+
+.btn-custom:hover:not(:disabled) {
+  background-color: #b8b8b8;
+}
