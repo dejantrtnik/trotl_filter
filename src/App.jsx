@@ -117,9 +117,14 @@ export default function App() {
           onAction={() => alert("Icon clicked!")}
         />
 
-        <SearchInput
+          <SearchInput
+            textArea={true}
+          // width={250}
+          // height={30}
+          // placeholder={"Search..."}
           // height={20}
           // pushUrlParamObj={"search"}
+            width={400}
         />
 
         <DebounceSelect
