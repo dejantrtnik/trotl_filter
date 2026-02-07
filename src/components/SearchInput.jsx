@@ -4,9 +4,10 @@ import React from "react";
  * SearchInput Component
  * @param {string} pushUrlParamObj - URL parameter key (if null, URL params are not updated)
  * @param {string} height - Input height (e.g., "40px", "3rem")
+ * @param {string|number} width - Input width (e.g., "200px" or 200)
  * @param {object} style - Custom inline styles
  */
-export default function SearchInput({ pushUrlParamObj = null, height, style = {}, ...props }) {
+export default function SearchInput({ pushUrlParamObj = null, height, width, style = {}, ...props }) {
   const key = pushUrlParamObj || "search";
   const [value, setValue] = React.useState("");
 
@@ -71,7 +72,7 @@ export default function SearchInput({ pushUrlParamObj = null, height, style = {}
         style={{
           marginBottom: "10px",
           padding: "5px",
-          width: "200px",
+          width: width !== undefined ? width : "200px",
           paddingRight: value ? "24px" : undefined,
           height: "100%",
           boxSizing: "border-box"
