@@ -1,0 +1,38 @@
+.trotl-upload {
+  font-family: inherit;
+}
+.upload-dropzone {
+  border: 2px dashed var(--trotl-border, #d0d7de);
+  padding: 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--trotl-upload-bg, #fafafa);
+  transition: background .15s ease, border-color .15s ease;
+}
+.upload-dropzone.drag-over {
+  background: var(--trotl-upload-drag-bg, #eef6ff);
+  border-color: var(--trotl-primary, #1e88e5);
+}
+.upload-inner {
+  text-align: center;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.upload-icon { font-size: 20px; }
+.upload-text { color: var(--trotl-text, #333); }
+.upload-browse {
+  margin-left: 8px;
+  background: var(--trotl-primary, #1e88e5);
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+.upload-list { list-style: none; margin: 8px 0 0; padding: 0; }
+.upload-item { display:flex; justify-content:space-between; padding:6px 8px; border-radius:6px; background:transparent; }
+.upload-name { color: var(--trotl-text, #222); }
+.upload-size { color: #666; font-size: 12px; }

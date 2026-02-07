@@ -12,6 +12,8 @@ import Button from "./components/Button.jsx";
 import "./components/Button.css";
 import Switch from "./components/Switch.jsx";
 import "./components/Switch.css";
+import Upload from "./components/Upload.jsx";
+import "./components/Upload.css";
 // export default Filter;   // if you want default import
 export {
   MultiSelectDropdown,
@@ -23,5 +25,6 @@ export {
   CalendarRangePicker,
   LineDivider,
   Button,
-  Switch
+  Switch,
+  Upload
 };

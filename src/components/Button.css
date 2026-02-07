@@ -66,3 +66,11 @@
 .btn-custom:hover:not(:disabled) {
   background-color: #b8b8b8;
 }
+
+/* Floating button base */
+.button--float {
+  position: fixed;
+  z-index: 9999;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+  border-radius: 2px;
+}

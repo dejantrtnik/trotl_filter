@@ -11,7 +11,8 @@ import {
   CalendarRangePicker,
   LineDivider,
   Button,
-  Switch
+  Switch,
+  Upload
 } from "./index.js";
 
 
@@ -40,6 +41,12 @@ export default function App() {
     inputValue: "",
     switchEnabled: false
   });
+
+  // Demo files to show in Upload when `value` is provided
+  const demoFiles = [
+    { name: "sample1.txt", size: 1234 },
+    { name: "picture.png", size: 23456 }
+  ];
 
   // Simulate fetching users with debounce
   const fetchUsers = async (query) => {
@@ -168,6 +175,18 @@ export default function App() {
         Login
       </Button>
 
+
+      <Button
+        float={{
+          position: "botton-left",
+          bottom: 10
+        }}
+        type="custom" // ok, cancel, delete, custom (null)
+        style={{ width: 200, color: "" }}
+        onClick={() => alert("Button clicked!")}>
+        floating button
+      </Button>
+
       <Switch
         checked={formData.switchEnabled}
         onChange={(value) => setFormData({ ...formData, switchEnabled: value })}
@@ -177,7 +196,24 @@ export default function App() {
         style={{}}
         className=""
       />
+      <LineDivider
+        text="Line Divider Example"
+        position="center"
+        color="#007bff"
+        thickness={2}
+        margin="30px 0"
+        fontSize={16}
+        fontWeight="bold"
+        fontColor="#007bff"
+      />
 
+      <Upload
+        onChange={(files, ev) => console.log("Upload onChange:", files, ev)}
+        value={demoFiles}
+        // acceptFiles={}
+        maxFiles={2}
+        customPreview={null}
+      />
       
     </div>
   );
