@@ -124,7 +124,10 @@ export default function App() {
           // placeholder={"Search..."}
           // height={20}
           // pushUrlParamObj={"search"}
-            width={400}
+          // width={400}
+          width="100%"
+          minWidth={200}
+          maxWidth={800}
         />
 
         <DebounceSelect
