@@ -4,7 +4,7 @@
 .upload-dropzone {
   border: 2px dashed var(--trotl-border, #d0d7de);
   padding: 18px;
-  border-radius: 8px;
+  border-radius: 2px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -30,9 +30,9 @@
   color: white;
   border: none;
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: 2px;
 }
 .upload-list { list-style: none; margin: 8px 0 0; padding: 0; }
-.upload-item { display:flex; justify-content:space-between; padding:6px 8px; border-radius:6px; background:transparent; }
+.upload-item { display:flex; justify-content:space-between; padding:6px 8px; border-radius:2px; background:transparent; }
 .upload-name { color: var(--trotl-text, #222); }
 .upload-size { color: #666; font-size: 12px; }

@@ -9,7 +9,7 @@ const formatBytes = (bytes) => {
   return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`;
 };
 
-export default function Upload({ onChange, multiple = false, accept, acceptFiles, maxFiles = null, maxFileSize = null, customPreview = null, buttonLabel = "Browse...", className = "", style = {}, value = undefined }) {
+export default function Upload({ onChange, multiple = false, accept, acceptFiles, maxFiles = null, maxFileSize = null, customPreview = null, buttonLabel = "Browse...", className = "", style = {}, value = undefined, width, height }) {
   const inputRef = useRef(null);
   const [dragOver, setDragOver] = useState(false);
   const [files, setFiles] = useState([]);
@@ -63,8 +63,18 @@ export default function Upload({ onChange, multiple = false, accept, acceptFiles
 
   const onDragLeave = () => setDragOver(false);
 
+  // Normalize numeric sizes to px strings
+  const normalizeSize = (s) => (s === undefined || s === null ? undefined : typeof s === "number" ? `${s}px` : s);
+  const normalizedWidth = normalizeSize(width);
+  const normalizedHeight = normalizeSize(height);
+
+  // Merge style and props, with explicit props taking precedence
+  const appliedStyle = { ...style };
+  if (normalizedWidth !== undefined) appliedStyle.width = normalizedWidth;
+  if (normalizedHeight !== undefined) appliedStyle.height = normalizedHeight;
+
   return (
-    <div className={`trotl-upload ${className}`} style={style}>
+    <div className={`trotl-upload ${className}`} style={appliedStyle}>
       <input
         ref={inputRef}
         type="file"
@@ -122,4 +132,6 @@ Upload.propTypes = {
   buttonLabel: PropTypes.string,
   className: PropTypes.string,
   style: PropTypes.object,
+  width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };

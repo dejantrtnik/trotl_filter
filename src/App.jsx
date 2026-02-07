@@ -221,6 +221,8 @@ export default function App() {
         // acceptFiles={}
         maxFiles={2}
         customPreview={null}
+        height={40}
+        width={300}
       />
       
     </div>
