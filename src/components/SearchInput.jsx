@@ -5,9 +5,10 @@ import React from "react";
  * @param {string} pushUrlParamObj - URL parameter key (if null, URL params are not updated)
  * @param {string} height - Input height (e.g., "40px", "3rem")
  * @param {string|number} width - Input width (e.g., "200px" or 200)
+ * @param {boolean} textArea - When true, render a textarea instead of an input
  * @param {object} style - Custom inline styles
  */
-export default function SearchInput({ pushUrlParamObj = null, height, width, style = {}, ...props }) {
+export default function SearchInput({ pushUrlParamObj = null, height, width, textArea = false, style = {}, ...props }) {
   const key = pushUrlParamObj || "search";
   const [value, setValue] = React.useState("");
 
@@ -52,11 +53,14 @@ export default function SearchInput({ pushUrlParamObj = null, height, width, sty
     setUrlParam("");
   };
 
+  // Normalize numeric sizes to px strings
+  const normalizeSize = (s) => (s === undefined || s === null ? undefined : typeof s === "number" ? `${s}px` : s);
+
   // Apply height to container if provided and style doesn't have height defined
   const containerStyle = {
     position: "relative",
     display: "inline-block",
-    height: height || "34px",
+    height: normalizeSize(height) || (textArea ? undefined : "34px"),
     verticalAlign: "middle",
     ...style
   };
@@ -66,20 +70,39 @@ export default function SearchInput({ pushUrlParamObj = null, height, width, sty
       title={"tooltip"}
       style={containerStyle}
     >
-      <input
-        className="basic-input"
-        value={value}
-        style={{
-          marginBottom: "10px",
-          padding: "5px",
-          width: width !== undefined ? width : "200px",
-          paddingRight: value ? "24px" : undefined,
-          height: "100%",
-          boxSizing: "border-box"
-        }}
-        onChange={handleChange}
-        {...props}
-      />
+      {!textArea ? (
+        <input
+          className="basic-input"
+          value={value}
+          style={{
+            marginBottom: "10px",
+            padding: "5px",
+            width: normalizeSize(width) || "200px",
+            paddingRight: value ? "24px" : undefined,
+            height: "100%",
+            boxSizing: "border-box"
+          }}
+          onChange={handleChange}
+          {...props}
+        />
+      ) : (
+        <textarea
+          className="basic-input"
+          value={value}
+          style={{
+            marginBottom: "10px",
+            padding: "5px",
+            width: normalizeSize(width) || "200px",
+            paddingRight: value ? "24px" : undefined,
+            boxSizing: "border-box",
+            resize: "vertical",
+            minHeight: normalizeSize(height) || "80px",
+            height: normalizeSize(height) ? "100%" : undefined
+          }}
+          onChange={handleChange}
+          {...props}
+        />
+      )}
       {value && (
         <span
           onClick={handleClear}
