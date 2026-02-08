@@ -36,6 +36,8 @@ export default function App() {
 
   const [userOptions, setUserOptions] = useState(users);
 
+  const [selectedUser, setSelectedUser] = useState(null);
+
   const [formData, setFormData] = useState({
     components: [],
     inputValue: "",
@@ -135,7 +137,8 @@ export default function App() {
           fetchOptions={fetchUsers}
           placeholder="Select a user"
           // objValue={formData.product}
-          onSelect={(value, rest) => console.log("Selected user ID:", rest)}
+          value={selectedUser}
+          onSelect={(value, item) => { console.log("Selected user:", item); setSelectedUser(item); }}
           disabled={false}
           style={{ width: 300 }}
           pushUrlParamObj={"id"}

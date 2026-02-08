@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import PropTypes from "prop-types";
 // import "src/style/DebounceSelect.css";
 
 const DebounceSelect = ({
@@ -18,6 +19,7 @@ const DebounceSelect = ({
   // external loading prop (won't clash with internal state named `loading`)
   loading: loadingProp = false,
   t
+  , value
 }) => {
   let translate
   if (t) {
@@ -36,9 +38,36 @@ const DebounceSelect = ({
   const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const [selectedItems, setSelectedItems] = useState(
-    isMulti ? objValue ?? [] : objValue ? [objValue] : []
-  );
+  const normalizeIncoming = (v) => {
+    if (v === undefined || v === null) return isMulti ? [] : [];
+    if (isMulti) {
+      if (Array.isArray(v)) {
+        return v.map(item => (item && typeof item === 'object' && ('value' in item || 'label' in item)) ? item : { value: item, label: String(item) });
+      }
+      // single primitive provided for multi -> wrap
+      return [{ value: v, label: String(v) }];
+    } else {
+      if (Array.isArray(v)) {
+        // take first
+        const first = v[0];
+        return first ? [{ value: first.value ?? first, label: first.label ?? String(first) }] : [];
+      }
+      return (v && typeof v === 'object') ? [{ value: v.value ?? v, label: v.label ?? String(v) }] : [{ value: v, label: String(v) }];
+    }
+  };
+
+  const initialSel = value !== undefined ? normalizeIncoming(value) : (objValue !== undefined ? normalizeIncoming(objValue) : (isMulti ? [] : []));
+  const [selectedItems, setSelectedItems] = useState(initialSel);
+
+  // Sync to controlled `value` or legacy `objValue` when they change
+  useEffect(() => {
+    if (value !== undefined) {
+      setSelectedItems(normalizeIncoming(value));
+    } else if (objValue !== undefined) {
+      setSelectedItems(normalizeIncoming(objValue));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value, objValue]);
 
   // Auto-update selectedItems when URL param changes
   // useEffect(() => {
@@ -341,3 +370,21 @@ const DebounceSelect = ({
 };
 
 export default DebounceSelect;
+
+DebounceSelect.propTypes = {
+  value: PropTypes.oneOfType([PropTypes.array, PropTypes.object, PropTypes.string, PropTypes.number]),
+  fetchOptions: PropTypes.func.isRequired,
+  onSelect: PropTypes.func,
+  placeholder: PropTypes.string,
+  debounceDelay: PropTypes.number,
+  required: PropTypes.bool,
+  disabled: PropTypes.bool,
+  objValue: PropTypes.any,
+  style: PropTypes.object,
+  isMulti: PropTypes.bool,
+  pushUrlParamObj: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+  addItem: PropTypes.func,
+  fetchAll: PropTypes.bool,
+  loading: PropTypes.bool,
+  t: PropTypes.func
+};
