@@ -9,7 +9,7 @@ const formatBytes = (bytes) => {
   return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`;
 };
 
-export default function Upload({ onChange, multiple = false, accept, acceptFiles, maxFiles = null, maxFileSize = null, customPreview = null, buttonLabel = "Browse...", className = "", style = {}, value = undefined, width, height }) {
+export default function Upload({ onChange, onRemove, multiple = false, accept, acceptFiles, maxFiles = null, maxFileSize = null, customPreview = null, buttonLabel = "Browse...", className = "", style = {}, value = undefined, width, height }) {
   const inputRef = useRef(null);
   const [dragOver, setDragOver] = useState(false);
   const [files, setFiles] = useState([]);
@@ -47,15 +47,17 @@ export default function Upload({ onChange, multiple = false, accept, acceptFiles
     // For controlled component, call onChange with new array
     if (value !== undefined && value !== null) {
       const arr = Array.isArray(value) ? [...value] : [value];
-      arr.splice(index, 1);
-      if (onChange) onChange(multiple ? arr : (arr[0] || null), null);
+      const removed = arr.splice(index, 1)[0];
+      if (typeof onRemove === "function") onRemove(removed, index);
+      if (onChange) onChange(multiple ? arr : (arr[0] || null), null, { action: 'remove', removed, index });
       return;
     }
     // Uncontrolled: update internal state
     setFiles((prev) => {
       const arr = [...prev];
-      arr.splice(index, 1);
-      if (onChange) onChange(multiple ? arr : (arr[0] || null), null);
+      const removed = arr.splice(index, 1)[0];
+      if (typeof onRemove === "function") onRemove(removed, index);
+      if (onChange) onChange(multiple ? arr : (arr[0] || null), null, { action: 'remove', removed, index });
       return arr;
     });
   };
@@ -132,6 +134,7 @@ export default function Upload({ onChange, multiple = false, accept, acceptFiles
                   <span className="upload-size">{(f && f.size) ? formatBytes(f.size) : ""}</span>
                   <button
                     type="button"
+                    data-action="remove"
                     aria-label={`Remove ${(f && f.name) || String(f)}`}
                     className="upload-remove"
                     onClick={(e) => removeFileAt(i, e)}
@@ -150,6 +153,7 @@ export default function Upload({ onChange, multiple = false, accept, acceptFiles
 
 Upload.propTypes = {
   onChange: PropTypes.func,
+  onRemove: PropTypes.func,
   multiple: PropTypes.bool,
   accept: PropTypes.string,
   acceptFiles: PropTypes.string,

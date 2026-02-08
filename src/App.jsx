@@ -219,7 +219,8 @@ export default function App() {
       />
 
       <Upload
-        onChange={(files, ev) => console.log("Upload onChange:", files, ev)}
+        onChange={(files, ev, meta) => console.log("Upload onChange:", files, ev, meta)}
+        onRemove={(removed, index) => console.log("Upload onRemove:", removed, index)}
         // value={demoFiles}
         // acceptFiles={}
         maxFiles={2}
