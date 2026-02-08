@@ -42,6 +42,24 @@ export default function Upload({ onChange, multiple = false, accept, acceptFiles
     return files;
   })();
 
+  const removeFileAt = (index, event = null) => {
+    if (event) event.stopPropagation();
+    // For controlled component, call onChange with new array
+    if (value !== undefined && value !== null) {
+      const arr = Array.isArray(value) ? [...value] : [value];
+      arr.splice(index, 1);
+      if (onChange) onChange(multiple ? arr : (arr[0] || null), null);
+      return;
+    }
+    // Uncontrolled: update internal state
+    setFiles((prev) => {
+      const arr = [...prev];
+      arr.splice(index, 1);
+      if (onChange) onChange(multiple ? arr : (arr[0] || null), null);
+      return arr;
+    });
+  };
+
   const onInputChange = (e) => {
     handleFiles(e.target.files, e);
   };
@@ -110,7 +128,17 @@ export default function Upload({ onChange, multiple = false, accept, acceptFiles
             {displayFiles.map((f, i) => (
               <li key={`${(f && f.name) || f || i}-${i}`} className="upload-item">
                 <span className="upload-name">{(f && f.name) || String(f)}</span>
-                <span className="upload-size">{(f && f.size) ? formatBytes(f.size) : ""}</span>
+                <div className="upload-actions">
+                  <span className="upload-size">{(f && f.size) ? formatBytes(f.size) : ""}</span>
+                  <button
+                    type="button"
+                    aria-label={`Remove ${(f && f.name) || String(f)}`}
+                    className="upload-remove"
+                    onClick={(e) => removeFileAt(i, e)}
+                  >
+                    🗑️
+                  </button>
+                </div>
               </li>
             ))}
           </ul>

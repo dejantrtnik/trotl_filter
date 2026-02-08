@@ -220,7 +220,7 @@ export default function App() {
 
       <Upload
         onChange={(files, ev) => console.log("Upload onChange:", files, ev)}
-        value={demoFiles}
+        // value={demoFiles}
         // acceptFiles={}
         maxFiles={2}
         customPreview={null}
