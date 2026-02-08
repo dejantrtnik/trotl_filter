@@ -9,7 +9,7 @@ const formatBytes = (bytes) => {
   return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`;
 };
 
-export default function Upload({ onChange, onRemove, multiple = false, accept, acceptFiles, maxFiles = null, maxFileSize = null, customPreview = null, buttonLabel = "Browse...", className = "", style = {}, value = undefined, width, height }) {
+export default function Upload({ onChange, onRemove, multiple = false, accept, acceptFiles, maxFiles = null, maxFileSize = null, customPreview = null, buttonLabel = "Browse...", hintText = "Drag & drop files here or", customText = null, className = "", style = {}, value = undefined, width, height, disabled = false }) {
   const inputRef = useRef(null);
   const [dragOver, setDragOver] = useState(false);
   const [files, setFiles] = useState([]);
@@ -63,21 +63,25 @@ export default function Upload({ onChange, onRemove, multiple = false, accept, a
   };
 
   const onInputChange = (e) => {
+    if (disabled) return;
     handleFiles(e.target.files, e);
   };
 
   const openFileDialog = () => {
+    if (disabled) return;
     if (inputRef.current) inputRef.current.click();
   };
 
   const onDrop = (e) => {
     e.preventDefault();
+    if (disabled) return;
     setDragOver(false);
     handleFiles(e.dataTransfer.files, e);
   };
 
   const onDragOver = (e) => {
     e.preventDefault();
+    if (disabled) return;
     setDragOver(true);
   };
 
@@ -102,10 +106,11 @@ export default function Upload({ onChange, onRemove, multiple = false, accept, a
         onChange={onInputChange}
         multiple={multiple}
         accept={acceptFiles || accept}
+        disabled={disabled}
       />
 
       <div
-        className={`upload-dropzone ${dragOver ? "drag-over" : ""}`}
+        className={`upload-dropzone ${dragOver ? "drag-over" : ""} ${disabled ? "disabled" : ""}`}
         onClick={openFileDialog}
         onDrop={onDrop}
         onDragOver={onDragOver}
@@ -116,10 +121,14 @@ export default function Upload({ onChange, onRemove, multiple = false, accept, a
       >
         <div className="upload-inner">
           <div className="upload-icon">⬆️</div>
-          <div className="upload-text">Drag & drop files here or</div>
+          <div className="upload-text">{hintText}</div>
           <button type="button" className="upload-browse" onClick={(e) => { e.stopPropagation(); openFileDialog(); }}>{buttonLabel}</button>
         </div>
       </div>
+
+      {customText ? (
+        <div className="upload-custom-text">{customText}</div>
+      ) : null}
 
       {displayFiles && displayFiles.length > 0 && (
         customPreview ? (
@@ -138,6 +147,7 @@ export default function Upload({ onChange, onRemove, multiple = false, accept, a
                     aria-label={`Remove ${(f && f.name) || String(f)}`}
                     className="upload-remove"
                     onClick={(e) => removeFileAt(i, e)}
+                    disabled={disabled}
                   >
                     🗑️
                   </button>
@@ -166,4 +176,6 @@ Upload.propTypes = {
   style: PropTypes.object,
   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  hintText: PropTypes.string,
+  customText: PropTypes.node,
 };

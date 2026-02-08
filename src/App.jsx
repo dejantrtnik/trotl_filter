@@ -223,10 +223,12 @@ export default function App() {
         onRemove={(removed, index) => console.log("Upload onRemove:", removed, index)}
         // value={demoFiles}
         // acceptFiles={}
+        customText={"You can upload up to 2 files. Supported formats: .txt, .png, .jpg."}
         maxFiles={2}
         customPreview={null}
         height={40}
         width={300}
+        disabled={true}
       />
       
     </div>
