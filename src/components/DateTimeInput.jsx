@@ -88,6 +88,10 @@ export default function DateTimeInput({
     }
     return toInputString(d.getTime());
   });
+  const valueRef = useRef(value);
+  useEffect(() => {
+    valueRef.current = value;
+  }, [value]);
 
   // Dropdown state & positioning
   const [open, setOpen] = useState(false);
@@ -250,8 +254,10 @@ export default function DateTimeInput({
       const urlVal = params.get(paramKey);
       if (urlVal) {
         const str = toInputString(urlVal);
-        setValue(prev => prev !== str ? str : prev);
-        if (onChange && str !== controlledValue) onChange(urlVal);
+        if (str !== valueRef.current) {
+          setValue(prev => prev !== str ? str : prev);
+          if (onChange && str !== controlledValue) onChange(urlVal);
+        }
       }
     };
     syncFromUrl();
