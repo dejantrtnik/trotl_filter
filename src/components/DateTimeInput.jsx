@@ -53,6 +53,8 @@ export default function DateTimeInput({
   const onChangeRef = useRef(onChange);
   const controlledValueRef = useRef(controlledValue);
   const lastUrlValueRef = useRef(null);
+  const isUpdatingFromComponentRef = useRef(false);
+  const historyPatchedRef = useRef(false);
   useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
@@ -243,6 +245,7 @@ export default function DateTimeInput({
   // Update URL param
   const setUrlParam = useCallback((val) => {
     if (!paramKey) return;
+    isUpdatingFromComponentRef.current = true;
     const params = new URLSearchParams(window.location.search);
     let ts = val;
     if (val && typeof val === "string" && !/^[0-9]+$/.test(val)) {
@@ -255,12 +258,14 @@ export default function DateTimeInput({
     else params.delete(paramKey);
     const newUrl = window.location.pathname + (params.toString() ? `?${params.toString()}` : "");
     window.history.replaceState({}, "", newUrl);
+    setTimeout(() => { isUpdatingFromComponentRef.current = false; }, 0);
   }, [paramKey]);
 
   // Sync from URL
   useEffect(() => {
     if (!paramKey || typeof controlledValueRef.current !== 'undefined') return;
     const syncFromUrl = () => {
+      if (isUpdatingFromComponentRef.current) return;
       const params = new URLSearchParams(window.location.search);
       const urlVal = params.get(paramKey);
       if (urlVal) {
@@ -274,16 +279,24 @@ export default function DateTimeInput({
     };
     syncFromUrl();
     window.addEventListener('popstate', syncFromUrl);
-    const patchHistory = (type) => {
-      const orig = window.history[type];
-      window.history[type] = function () {
-        const rv = orig.apply(this, arguments);
-        window.dispatchEvent(new Event(type));
+    
+    // Only patch history methods once globally
+    if (!historyPatchedRef.current) {
+      const origPushState = window.history.pushState;
+      const origReplaceState = window.history.replaceState;
+      window.history.pushState = function () {
+        const rv = origPushState.apply(this, arguments);
+        window.dispatchEvent(new Event('pushState'));
         return rv;
       };
-    };
-    patchHistory('pushState');
-    patchHistory('replaceState');
+      window.history.replaceState = function () {
+        const rv = origReplaceState.apply(this, arguments);
+        window.dispatchEvent(new Event('replaceState'));
+        return rv;
+      };
+      historyPatchedRef.current = true;
+    }
+    
     window.addEventListener('pushState', syncFromUrl);
     window.addEventListener('replaceState', syncFromUrl);
     return () => {
