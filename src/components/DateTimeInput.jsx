@@ -24,6 +24,14 @@ export default function DateTimeInput({
   className = "",
   style = {},
   predefinedRanges = ["today", "yesterday"],
+  presets = [
+    { label: "Clear", type: "clear" },
+    { label: "Today", type: "today" },
+    { label: "+1 Week", type: "days", value: 7 },
+    { label: "+10 Days", type: "days", value: 10 },
+    { label: "+1 Month", type: "months", value: 1 },
+    { label: "+1 Year", type: "years", value: 1 }
+  ],
   startWith = "sunday",
   ...rest
 }) {
@@ -160,6 +168,7 @@ export default function DateTimeInput({
   }, []);
   const PREDEFINED = useMemo(() => predefinedRanges.map(createPredefinedItem), [predefinedRanges, createPredefinedItem]);
   const [selectedPredefined, setSelectedPredefined] = useState("");
+  
 
   useEffect(() => {
     if (open && dropdownRef.current) {
@@ -341,6 +350,41 @@ export default function DateTimeInput({
     onChange?.("");
   };
 
+  // Presets (custom actions like clear, today, +N days/months/years)
+  const handlePresetClick = useCallback((p) => {
+    if (!p || disabled) return;
+    const type = String(p.type || '').toLowerCase();
+    if (type === 'clear') {
+      handleClear();
+      return;
+    }
+    let d = new Date();
+    if (type === 'today') {
+      d = new Date();
+      d.setHours(0,0,0,0);
+    } else if (type === 'days') {
+      const v = Number(p.value) || 0;
+      d.setHours(0,0,0,0);
+      d.setDate(d.getDate() + v);
+    } else if (type === 'months') {
+      const v = Number(p.value) || 0;
+      d.setHours(0,0,0,0);
+      d.setMonth(d.getMonth() + v);
+    } else if (type === 'years') {
+      const v = Number(p.value) || 0;
+      d.setHours(0,0,0,0);
+      d.setFullYear(d.getFullYear() + v);
+    } else {
+      // unknown type: ignore
+      return;
+    }
+    if (time && timeStart) {
+      const [h, m] = (timeStart || '00:00').split(':');
+      d.setHours(Number(h), Number(m), 0, 0);
+    }
+    applySelection(d);
+  }, [disabled, time, timeStart, applySelection, handleClear]);
+
   // Outside click close
   useEffect(() => {
     if (!open) return;
@@ -418,6 +462,28 @@ export default function DateTimeInput({
                   >{p.label}</button>
                 );
               })}
+            </div>
+          )}
+          {/* Preset buttons (clear, today, +N) */}
+          {Array.isArray(presets) && presets.length > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+              {presets.map((ps, idx) => (
+                <button
+                  key={`preset_${idx}`}
+                  type="button"
+                  onClick={() => handlePresetClick(ps)}
+                  disabled={disabled}
+                  className="basic-btn"
+                  style={{
+                    padding: '4px 8px',
+                    fontSize: 12,
+                    background: disabled ? '#f9fafb' : '#fff',
+                    color: disabled ? '#9ca3af' : '#000',
+                    border: disabled ? '1px solid #e5e7eb' : '1px solid #d9d9d9',
+                    cursor: disabled ? 'not-allowed' : 'pointer'
+                  }}
+                >{ps.label}</button>
+              ))}
             </div>
           )}
           {/* Month navigation */}
@@ -499,6 +565,7 @@ DateTimeInput.propTypes = {
   className: PropTypes.string,
   style: PropTypes.object,
   predefinedRanges: PropTypes.array,
+  presets: PropTypes.array,
 };
 
 const buttonStyle = {
