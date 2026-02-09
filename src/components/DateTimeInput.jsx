@@ -50,7 +50,7 @@ export default function DateTimeInput({
   const lastUrlValueRef = useRef(null);
   useEffect(() => { onChangeRef.current = onChange; }, [onChange]);
   useEffect(() => { controlledValueRef.current = controlledValue; }, [controlledValue]);
-
+  
   // Helper: convert timestamp (number|string) to internal input string
   const toInputString = useCallback((ts) => {
     if (!ts) return "";
@@ -66,6 +66,10 @@ export default function DateTimeInput({
     }
     return `${yyyy}-${mm}-${dd}`;
   }, [time]);
+  
+  // Stable ref for toInputString to avoid effect re-runs
+  const toInputStringRef = useRef(toInputString);
+  useEffect(() => { toInputStringRef.current = toInputString; }, [toInputString]);
 
   // Initial value
   const [value, setValue] = useState(() => {
@@ -252,7 +256,7 @@ export default function DateTimeInput({
       const params = new URLSearchParams(window.location.search);
       const urlVal = params.get(paramKey);
       if (urlVal && urlVal !== lastUrlValueRef.current) {
-        const str = toInputString(urlVal);
+        const str = toInputStringRef.current(urlVal);
         setValue(prev => prev !== str ? str : prev);
         if (onChangeRef.current && str !== controlledValueRef.current) onChangeRef.current(urlVal);
         lastUrlValueRef.current = urlVal;
@@ -285,7 +289,7 @@ export default function DateTimeInput({
       window.removeEventListener('pushState', syncFromUrl);
       window.removeEventListener('replaceState', syncFromUrl);
     };
-  }, [paramKey, toInputString]);
+  }, [paramKey]);
 
   // Controlled value sync
   useEffect(() => {
