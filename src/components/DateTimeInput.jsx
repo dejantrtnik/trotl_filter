@@ -42,14 +42,16 @@ export default function DateTimeInput({
   }
 
   const paramKey = pushUrlParamObj || null;
+  const isControlled = typeof controlledValue !== "undefined";
+  const normalizedControlledValue = isControlled ? (controlledValue ?? "") : undefined;
 
   // Refs to stabilize callbacks and prevent re-entrant URL updates
   const onChangeRef = useRef(onChange);
-  const controlledValueRef = useRef(controlledValue);
+  const controlledValueRef = useRef(normalizedControlledValue);
   const isUpdatingFromComponentRef = useRef(false);
   const lastUrlValueRef = useRef(null);
   useEffect(() => { onChangeRef.current = onChange; }, [onChange]);
-  useEffect(() => { controlledValueRef.current = controlledValue; }, [controlledValue]);
+  useEffect(() => { controlledValueRef.current = normalizedControlledValue; }, [normalizedControlledValue]);
   
   // Helper: convert timestamp (number|string) to internal input string
   const toInputString = useCallback((ts) => {
@@ -73,7 +75,7 @@ export default function DateTimeInput({
 
   // Initial value
   const [value, setValue] = useState(() => {
-    if (typeof controlledValue !== "undefined") return controlledValue;
+    if (isControlled) return normalizedControlledValue;
     if (!paramKey) {
       let d = new Date();
       if (time && timeStart) {
@@ -293,8 +295,10 @@ export default function DateTimeInput({
 
   // Controlled value sync
   useEffect(() => {
-    if (typeof controlledValue !== 'undefined') setValue(controlledValue);
-  }, [controlledValue]);
+    if (isControlled) {
+      setValue((prev) => (prev !== normalizedControlledValue ? normalizedControlledValue : prev));
+    }
+  }, [isControlled, normalizedControlledValue]);
 
   // Formatting display (similar to RangePicker)
   const formatDisplay = () => {
@@ -328,7 +332,7 @@ export default function DateTimeInput({
       dt.setHours(Number(h), Number(m), 0, 0);
     }
     const str = toInputString(dt.getTime());
-    if (typeof controlledValue === 'undefined') setValue(str);
+    if (!isControlled) setValue(str);
     setUrlParam(str);
     onChange?.(str);
   };
@@ -355,13 +359,13 @@ export default function DateTimeInput({
     const [h, m] = t.split(":");
     d.setHours(Number(h), Number(m), 0, 0);
     const str = toInputString(d.getTime());
-    if (typeof controlledValue === 'undefined') setValue(str);
+    if (!isControlled) setValue(str);
     setUrlParam(str);
     onChange?.(str);
   };
 
   const handleClear = () => {
-    if (typeof controlledValue === 'undefined') setValue("");
+    if (!isControlled) setValue("");
     setUrlParam("");
     onChange?.("");
   };
