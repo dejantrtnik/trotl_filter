@@ -24,14 +24,6 @@ export default function DateTimeInput({
   className = "",
   style = {},
   predefinedRanges = ["today", "yesterday"],
-  presets = [
-    { label: "Clear", type: "clear" },
-    { label: "Today", type: "today" },
-    { label: "+1 Week", type: "days", value: 7 },
-    { label: "+10 Days", type: "days", value: 10 },
-    { label: "+1 Month", type: "months", value: 1 },
-    { label: "+1 Year", type: "years", value: 1 }
-  ],
   startWith = "sunday",
   ...rest
 }) {
@@ -50,17 +42,14 @@ export default function DateTimeInput({
   }
 
   const paramKey = pushUrlParamObj || null;
+
+  // Refs to stabilize callbacks and prevent re-entrant URL updates
   const onChangeRef = useRef(onChange);
   const controlledValueRef = useRef(controlledValue);
-  const lastUrlValueRef = useRef(null);
   const isUpdatingFromComponentRef = useRef(false);
-  const historyPatchedRef = useRef(false);
-  useEffect(() => {
-    onChangeRef.current = onChange;
-  }, [onChange]);
-  useEffect(() => {
-    controlledValueRef.current = controlledValue;
-  }, [controlledValue]);
+  const lastUrlValueRef = useRef(null);
+  useEffect(() => { onChangeRef.current = onChange; }, [onChange]);
+  useEffect(() => { controlledValueRef.current = controlledValue; }, [controlledValue]);
 
   // Helper: convert timestamp (number|string) to internal input string
   const toInputString = useCallback((ts) => {
@@ -99,10 +88,6 @@ export default function DateTimeInput({
     }
     return toInputString(d.getTime());
   });
-  const valueRef = useRef(value);
-  useEffect(() => {
-    valueRef.current = value;
-  }, [value]);
 
   // Dropdown state & positioning
   const [open, setOpen] = useState(false);
@@ -183,7 +168,6 @@ export default function DateTimeInput({
   }, []);
   const PREDEFINED = useMemo(() => predefinedRanges.map(createPredefinedItem), [predefinedRanges, createPredefinedItem]);
   const [selectedPredefined, setSelectedPredefined] = useState("");
-  
 
   useEffect(() => {
     if (open && dropdownRef.current) {
@@ -252,11 +236,10 @@ export default function DateTimeInput({
       const d = new Date(val);
       ts = d.getTime();
     }
-    const nextVal = (ts && String(ts).length > 0 && !isNaN(Number(ts))) ? String(ts) : "";
-    lastUrlValueRef.current = nextVal;
-    if (nextVal) params.set(paramKey, nextVal);
+    if (ts && String(ts).length > 0 && !isNaN(Number(ts))) params.set(paramKey, String(ts));
     else params.delete(paramKey);
     const newUrl = window.location.pathname + (params.toString() ? `?${params.toString()}` : "");
+    lastUrlValueRef.current = params.get(paramKey) || null;
     window.history.replaceState({}, "", newUrl);
     setTimeout(() => { isUpdatingFromComponentRef.current = false; }, 0);
   }, [paramKey]);
@@ -268,35 +251,33 @@ export default function DateTimeInput({
       if (isUpdatingFromComponentRef.current) return;
       const params = new URLSearchParams(window.location.search);
       const urlVal = params.get(paramKey);
-      if (urlVal) {
-        if (lastUrlValueRef.current === urlVal && valueRef.current === toInputString(urlVal)) return;
+      if (urlVal && urlVal !== lastUrlValueRef.current) {
         const str = toInputString(urlVal);
-        if (str !== valueRef.current) {
-          setValue(prev => prev !== str ? str : prev);
-          if (onChangeRef.current && str !== controlledValueRef.current) onChangeRef.current(urlVal);
-        }
+        setValue(prev => prev !== str ? str : prev);
+        if (onChangeRef.current && str !== controlledValueRef.current) onChangeRef.current(urlVal);
+        lastUrlValueRef.current = urlVal;
+      } else if (!urlVal && lastUrlValueRef.current !== null) {
+        setValue("");
+        if (onChangeRef.current) onChangeRef.current("");
+        lastUrlValueRef.current = null;
       }
     };
     syncFromUrl();
     window.addEventListener('popstate', syncFromUrl);
-    
-    // Only patch history methods once globally
-    if (!historyPatchedRef.current) {
-      const origPushState = window.history.pushState;
-      const origReplaceState = window.history.replaceState;
-      window.history.pushState = function () {
-        const rv = origPushState.apply(this, arguments);
-        window.dispatchEvent(new Event('pushState'));
-        return rv;
+    // Patch history methods only once globally
+    if (!window.__historyPatched) {
+      window.__historyPatched = true;
+      const patchHistory = (type) => {
+        const orig = window.history[type];
+        window.history[type] = function () {
+          const rv = orig.apply(this, arguments);
+          window.dispatchEvent(new Event(type));
+          return rv;
+        };
       };
-      window.history.replaceState = function () {
-        const rv = origReplaceState.apply(this, arguments);
-        window.dispatchEvent(new Event('replaceState'));
-        return rv;
-      };
-      historyPatchedRef.current = true;
+      patchHistory('pushState');
+      patchHistory('replaceState');
     }
-    
     window.addEventListener('pushState', syncFromUrl);
     window.addEventListener('replaceState', syncFromUrl);
     return () => {
@@ -381,41 +362,6 @@ export default function DateTimeInput({
     onChange?.("");
   };
 
-  // Presets (custom actions like clear, today, +N days/months/years)
-  const handlePresetClick = useCallback((p) => {
-    if (!p || disabled) return;
-    const type = String(p.type || '').toLowerCase();
-    if (type === 'clear') {
-      handleClear();
-      return;
-    }
-    let d = new Date();
-    if (type === 'today') {
-      d = new Date();
-      d.setHours(0,0,0,0);
-    } else if (type === 'days') {
-      const v = Number(p.value) || 0;
-      d.setHours(0,0,0,0);
-      d.setDate(d.getDate() + v);
-    } else if (type === 'months') {
-      const v = Number(p.value) || 0;
-      d.setHours(0,0,0,0);
-      d.setMonth(d.getMonth() + v);
-    } else if (type === 'years') {
-      const v = Number(p.value) || 0;
-      d.setHours(0,0,0,0);
-      d.setFullYear(d.getFullYear() + v);
-    } else {
-      // unknown type: ignore
-      return;
-    }
-    if (time && timeStart) {
-      const [h, m] = (timeStart || '00:00').split(':');
-      d.setHours(Number(h), Number(m), 0, 0);
-    }
-    applySelection(d);
-  }, [disabled, time, timeStart, applySelection, handleClear]);
-
   // Outside click close
   useEffect(() => {
     if (!open) return;
@@ -493,28 +439,6 @@ export default function DateTimeInput({
                   >{p.label}</button>
                 );
               })}
-            </div>
-          )}
-          {/* Preset buttons (clear, today, +N) */}
-          {Array.isArray(presets) && presets.length > 0 && (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
-              {presets.map((ps, idx) => (
-                <button
-                  key={`preset_${idx}`}
-                  type="button"
-                  onClick={() => handlePresetClick(ps)}
-                  disabled={disabled}
-                  className="basic-btn"
-                  style={{
-                    padding: '4px 8px',
-                    fontSize: 12,
-                    background: disabled ? '#f9fafb' : '#fff',
-                    color: disabled ? '#9ca3af' : '#000',
-                    border: disabled ? '1px solid #e5e7eb' : '1px solid #d9d9d9',
-                    cursor: disabled ? 'not-allowed' : 'pointer'
-                  }}
-                >{ps.label}</button>
-              ))}
             </div>
           )}
           {/* Month navigation */}
@@ -596,7 +520,6 @@ DateTimeInput.propTypes = {
   className: PropTypes.string,
   style: PropTypes.object,
   predefinedRanges: PropTypes.array,
-  presets: PropTypes.array,
 };
 
 const buttonStyle = {
