@@ -50,6 +50,14 @@ export default function DateTimeInput({
   }
 
   const paramKey = pushUrlParamObj || null;
+  const onChangeRef = useRef(onChange);
+  const controlledValueRef = useRef(controlledValue);
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+  useEffect(() => {
+    controlledValueRef.current = controlledValue;
+  }, [controlledValue]);
 
   // Helper: convert timestamp (number|string) to internal input string
   const toInputString = useCallback((ts) => {
@@ -248,7 +256,7 @@ export default function DateTimeInput({
 
   // Sync from URL
   useEffect(() => {
-    if (!paramKey || typeof controlledValue !== 'undefined') return;
+    if (!paramKey || typeof controlledValueRef.current !== 'undefined') return;
     const syncFromUrl = () => {
       const params = new URLSearchParams(window.location.search);
       const urlVal = params.get(paramKey);
@@ -256,7 +264,7 @@ export default function DateTimeInput({
         const str = toInputString(urlVal);
         if (str !== valueRef.current) {
           setValue(prev => prev !== str ? str : prev);
-          if (onChange && str !== controlledValue) onChange(urlVal);
+          if (onChangeRef.current && str !== controlledValueRef.current) onChangeRef.current(urlVal);
         }
       }
     };
@@ -279,7 +287,7 @@ export default function DateTimeInput({
       window.removeEventListener('pushState', syncFromUrl);
       window.removeEventListener('replaceState', syncFromUrl);
     };
-  }, [paramKey, controlledValue, onChange, toInputString]);
+  }, [paramKey, toInputString]);
 
   // Controlled value sync
   useEffect(() => {
