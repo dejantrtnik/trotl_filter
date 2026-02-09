@@ -52,6 +52,7 @@ export default function DateTimeInput({
   const paramKey = pushUrlParamObj || null;
   const onChangeRef = useRef(onChange);
   const controlledValueRef = useRef(controlledValue);
+  const lastUrlValueRef = useRef(null);
   useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
@@ -248,7 +249,9 @@ export default function DateTimeInput({
       const d = new Date(val);
       ts = d.getTime();
     }
-    if (ts && String(ts).length > 0 && !isNaN(Number(ts))) params.set(paramKey, String(ts));
+    const nextVal = (ts && String(ts).length > 0 && !isNaN(Number(ts))) ? String(ts) : "";
+    lastUrlValueRef.current = nextVal;
+    if (nextVal) params.set(paramKey, nextVal);
     else params.delete(paramKey);
     const newUrl = window.location.pathname + (params.toString() ? `?${params.toString()}` : "");
     window.history.replaceState({}, "", newUrl);
@@ -261,6 +264,7 @@ export default function DateTimeInput({
       const params = new URLSearchParams(window.location.search);
       const urlVal = params.get(paramKey);
       if (urlVal) {
+        if (lastUrlValueRef.current === urlVal && valueRef.current === toInputString(urlVal)) return;
         const str = toInputString(urlVal);
         if (str !== valueRef.current) {
           setValue(prev => prev !== str ? str : prev);
