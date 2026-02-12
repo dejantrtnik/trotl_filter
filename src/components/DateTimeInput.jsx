@@ -194,20 +194,32 @@ export default function DateTimeInput({
     return new Date(d.getFullYear(), d.getMonth(), 1, 0, 0, 0, 0);
   });
   // Keep monthCursor in sync when selected date changes externally
+  // Guard updates so changing references (e.g. PREDEFINED array identity) doesn't force state
   useEffect(() => {
     if (selectedDate) {
-      setMonthCursor(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1));
-    }
-    // Match predefined
-    if (selectedDate) {
+      const newMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+      // only update monthCursor when month/year actually differ
+      setMonthCursor(prev => {
+        if (!prev || prev.getFullYear() !== newMonth.getFullYear() || prev.getMonth() !== newMonth.getMonth()) {
+          return newMonth;
+        }
+        return prev;
+      });
+
+      // Match predefined: set only when value actually changes
       const ts = selectedDate.getTime();
+      let matched = false;
       for (let i = 0; i < PREDEFINED.length; i++) {
         const d = PREDEFINED[i].getDate();
-        if (d.getTime() === ts) { setSelectedPredefined(String(i)); return; }
+        if (d.getTime() === ts) {
+          setSelectedPredefined(prev => (prev !== String(i) ? String(i) : prev));
+          matched = true;
+          break;
+        }
       }
-      setSelectedPredefined("");
+      if (!matched) setSelectedPredefined(prev => (prev !== "" ? "" : prev));
     } else {
-      setSelectedPredefined("");
+      setSelectedPredefined(prev => (prev !== "" ? "" : prev));
     }
   }, [value, selectedDate, PREDEFINED]);
 
