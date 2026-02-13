@@ -2,6 +2,7 @@
 import "./index.css";
 import MultiSelectDropdown from "./components/MultiSelectDropdown.jsx";
 import MultiSelect from "./components/MultiSelect.jsx";
+import ColorPicker from "./components/ColorPicker.jsx";
 import DebounceSelect from "./components/DebounceSelect.jsx";
 import SearchInput from "./components/SearchInput.jsx";
 import IconInput from "./components/IconInput.jsx";
@@ -19,6 +20,7 @@ import "./components/Upload.css";
 export {
   MultiSelectDropdown,
   MultiSelect,
+  ColorPicker,
   DebounceSelect,
   SearchInput,
   IconInput,

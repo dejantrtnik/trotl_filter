@@ -13,7 +13,8 @@ import {
   LineDivider,
   Button,
   Switch,
-  Upload
+  Upload,
+  ColorPicker
 } from "./index.js";
 
 
@@ -120,17 +121,14 @@ export default function App() {
           onAction={() => alert("Icon clicked!")}
         />
 
+
+
         <SearchInput
-          textArea={true}
-          // width={250}
-          // height={30}
-          // placeholder={"Search..."}
-          // height={20}
-          // pushUrlParamObj={"search"}
-          // width={400}
           width="100%"
           minWidth={200}
           maxWidth={800}
+          // height={20}
+          // pushUrlParamObj={"search"}
         />
 
         <DebounceSelect
@@ -260,6 +258,26 @@ export default function App() {
         }}
         controlStyle={{ width: 300, padding: "0px 10px 0px 10px" }}
         // disabled={true}
+      />
+
+      <LineDivider
+        text="Line Divider Example"
+        position="center"
+        color="#007bff"
+        thickness={2}
+        margin="30px 0"
+        fontSize={16}
+        fontWeight="bold"
+        fontColor="#007bff"
+      />
+
+      <ColorPicker
+        label="Accent color"
+        value="#1677ff"
+        onChange={(c) => console.log('color selected', c)}
+        presetColors={["#1677ff", "#ff4d4f", "#52c41a", "#faad14"]}
+        allowCustom={true}
+        disabled={true}
       />
     </div>
   );
