@@ -76,6 +76,13 @@ export default function MultiSelect({
     return options;
   }, [options, inputValue, inputExists, addItem]);
 
+  // Labels for items hidden behind the "overflow" indicator
+  const hiddenLabels = useMemo(() => {
+    if (!isMulti) return "";
+    const arr = (selectedOptions || []).slice(maxVisible).map(s => s.label);
+    return arr.join(', ');
+  }, [isMulti, selectedOptions, maxVisible]);
+
   const toggleValue = (val) => {
     if (disabled) return;
     if (isMulti) {
@@ -155,16 +162,25 @@ export default function MultiSelect({
           ...controlStyle
         }}
       >
-        <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', flex: 1 }}>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'nowrap', flex: 1, overflow: 'hidden', minWidth: 0 }}>
           {isMulti ? (
             (selectedOptions || []).slice(0, maxVisible).map(s => (
-              <div key={s.value} style={{ padding: '4px 8px', background: '#e6f4ff', borderRadius: 2, fontSize: 13 }}>{s.label}</div>
+              <div key={s.value} onClick={(e) => e.stopPropagation()} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 8px', background: '#e6f4ff', borderRadius: 2, fontSize: 13, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 200, minWidth: 0 }}>
+                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>{s.label}</span>
+                <button
+                  aria-label={`Remove ${s.label}`}
+                  onClick={(e) => { e.stopPropagation(); if (!disabled) toggleValue(s.value); }}
+                  style={{ border: 'none', background: 'transparent', cursor: disabled ? 'not-allowed' : 'pointer', padding: 0, margin: 0, fontSize: 12 }}
+                >
+                  ✖
+                </button>
+              </div>
             ))
           ) : (
-            <div style={{ fontSize: 14, color: selectedOptions ? '#000' : '#666' }}>{selectedOptions ? selectedOptions.label : placeholder}</div>
+            <div style={{ fontSize: 14, color: selectedOptions ? '#000' : '#666', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selectedOptions ? selectedOptions.label : placeholder}</div>
           )}
           {isMulti && (selectedOptions || []).length > maxVisible && (
-            <div style={{ fontSize: 13, color: '#666' }}>+{(selectedOptions || []).length - maxVisible}</div>
+            <div title={hiddenLabels} style={{ fontSize: 13, color: '#666', cursor: 'default', flex: '0 0 auto', paddingLeft: 4 }}>…</div>
           )}
         </div>
 
