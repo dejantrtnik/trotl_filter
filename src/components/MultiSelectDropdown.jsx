@@ -236,12 +236,12 @@ const MultiSelectDropdown = ({
       maxHeight: 34,
       minHeight: 34,
       height: "auto",
-      backgroundColor: theme === "dark" ? "#1e1e1e" : "#fff",
+      background: disabled ? '#f5f5f5' : (theme === "dark" ? "#1e1e1e" : "#fff"),
       borderColor: theme === "dark" ? "#555" : "#ccc",
       color: theme === "dark" ? "#eee" : "#333",
       boxShadow: "none",
       borderRadius: 2,
-      cursor: "pointer",
+      cursor: disabled ? 'not-allowed' : "pointer",
       paddingRight: showSpinner ? 36 : base.paddingRight,
     }),
     menu: (base) => ({
@@ -306,7 +306,7 @@ const MultiSelectDropdown = ({
   const showRequiredError = required && (!selected || selected.length === 0);
   return (
     <div
-      style={{ width: "100%", position: 'relative', ...style, ...(disabled ? { opacity: 0.6 } : {}) }}
+      style={{ width: "100%", position: 'relative', ...style, ...(disabled ? { opacity: 0.6, background: '#f5f5f5' } : {}) }}
       ref={containerRef}
       className={showRequiredError ? "select-required-error" : ""}
       aria-disabled={disabled}

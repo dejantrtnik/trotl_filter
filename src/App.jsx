@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import {
   DebounceSelect,
   MultiSelectDropdown,
+  MultiSelect,
   SearchInput,
   IconInput,
   DateTimeInput,
@@ -69,10 +70,10 @@ export default function App() {
     <div className="body-content">
       <div style={{ display: "flex", gap: "1rem" }}>
 
-        <MultiSelectDropdown
+        {/* <MultiSelectDropdown
           loading={false}
           allowClear={true}
-          style={{ border: "2px solid red" }}
+          // style={{ border: "2px solid red" }}
           className="multi-select-dropdown"
           isMulti={true}
           label={"components"}
@@ -85,8 +86,8 @@ export default function App() {
           onChange={(newValues) => setFormData({ ...formData, components: newValues })}
           // required={isRequired("components")}
           pushUrlParamObj={"ids"}
-        />
-
+          // disabled={true}
+        /> */}
         <RangePicker
           time={true}
           timeStart={"00:00"}
@@ -119,8 +120,8 @@ export default function App() {
           onAction={() => alert("Icon clicked!")}
         />
 
-          <SearchInput
-            textArea={true}
+        <SearchInput
+          textArea={true}
           // width={250}
           // height={30}
           // placeholder={"Search..."}
@@ -145,7 +146,7 @@ export default function App() {
           fetchAll={false}
           addItem={(newOption) => setUserOptions(prev => [...prev, newOption])}
         />
-        <MultiSelectDropdown />
+        {/* <MultiSelectDropdown /> */}
 
       </div>
 
@@ -230,7 +231,36 @@ export default function App() {
         width={300}
         disabled={true}
       />
-      
+
+      <LineDivider
+        text="Line Divider Example"
+        position="center"
+        color="#007bff"
+        thickness={2}
+        margin="30px 0"
+        fontSize={16}
+        fontWeight="bold"
+        fontColor="#007bff"
+      />
+
+      <MultiSelect
+        className="multi-select-dropdown"
+        loading={false}
+        allowClear={true}
+        isMulti={true}
+        options={uniqueOptions}
+        selected={formData.components}
+        onChange={(newValues) => setFormData({ ...formData, components: newValues })}
+        // pushUrlParamObj={"ids"}
+        style={{
+          width: 300,
+          padding: "0px 10px 0px 10px",
+          borderRadius: 2,
+          // background: disabled ? '#f5f5f5' : '#fff',
+        }}
+        controlStyle={{ width: 300, padding: "0px 10px 0px 10px" }}
+        // disabled={true}
+      />
     </div>
   );
 }
