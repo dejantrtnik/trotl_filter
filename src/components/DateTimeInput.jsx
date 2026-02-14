@@ -25,6 +25,7 @@ export default function DateTimeInput({
   style = {},
   predefinedRanges = ["today", "yesterday"],
   startWith = "sunday",
+  presets = [],
   ...rest
 }) {
   let translate
@@ -360,6 +361,62 @@ export default function DateTimeInput({
     setSelectedPredefined(String(idx));
   };
 
+  const handlePresetClick = (preset) => {
+    if (!preset || !preset.type) return;
+    const type = String(preset.type).toLowerCase();
+
+    if (type === 'clear') {
+      handleClear();
+      return;
+    }
+
+    if (type === 'today') {
+      const d = new Date();
+      if (time && timeStart) {
+        const [h, m] = (timeStart || "00:00").split(":");
+        d.setHours(Number(h), Number(m), 0, 0);
+      } else if (!time) {
+        d.setHours(0, 0, 0, 0);
+      }
+      applySelection(d);
+      return;
+    }
+
+    // base = selected date (if present) or now
+    const base = selectedDate ? new Date(selectedDate) : new Date();
+    const val = Number(preset.value || 0);
+
+    if (type === 'days') {
+      base.setDate(base.getDate() + val);
+      if (!selectedDate && time && timeStart) {
+        const [h, m] = (timeStart || "00:00").split(":");
+        base.setHours(Number(h), Number(m), 0, 0);
+      }
+      applySelection(base);
+      return;
+    }
+
+    if (type === 'months') {
+      base.setMonth(base.getMonth() + val);
+      if (!selectedDate && time && timeStart) {
+        const [h, m] = (timeStart || "00:00").split(":");
+        base.setHours(Number(h), Number(m), 0, 0);
+      }
+      applySelection(base);
+      return;
+    }
+
+    if (type === 'years') {
+      base.setFullYear(base.getFullYear() + val);
+      if (!selectedDate && time && timeStart) {
+        const [h, m] = (timeStart || "00:00").split(":");
+        base.setHours(Number(h), Number(m), 0, 0);
+      }
+      applySelection(base);
+      return;
+    }
+  };
+
   const handleDayClick = (day) => {
     applySelection(day);
   };
@@ -512,6 +569,32 @@ export default function DateTimeInput({
               />
             </div>
           )}
+
+          {presets && presets.length > 0 && (
+            <div style={{ display: 'flex', gap: 8, marginTop: 8, marginBottom: 8, flexWrap: 'wrap' }}>
+              {presets.map((p, i) => (
+                <button
+                  key={`preset_${i}`}
+                  type="button"
+                  onClick={() => !disabled && handlePresetClick(p)}
+                  disabled={disabled}
+                  className="basic-btn"
+                  style={{
+                    padding: '6px 10px',
+                    fontSize: 12,
+                    background: disabled ? '#f9fafb' : '#fff',
+                    color: disabled ? '#9ca3af' : '#000',
+                    border: '1px solid #d9d9d9',
+                    borderRadius: 4,
+                    cursor: disabled ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  {p.label || p.type}
+                </button>
+              ))}
+            </div>
+          )}
+
           {/* Footer actions */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
             <div style={{ display: 'flex', gap: 8 }}>
@@ -540,6 +623,7 @@ DateTimeInput.propTypes = {
   className: PropTypes.string,
   style: PropTypes.object,
   predefinedRanges: PropTypes.array,
+  presets: PropTypes.array,
 };
 
 const buttonStyle = {

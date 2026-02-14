@@ -113,6 +113,14 @@ export default function App() {
           pushUrlParamObj={"datetime"}
           predefinedRanges={['today', 'yesterday', 'lastweek', 7, 'thismonth', 'lastyear']}
           startWith={"monday"}
+          presets={[
+            { label: "Clear", type: "clear" },
+            { label: "Today", type: "today" },
+            { label: "+1 Week", type: "days", value: 7 },
+            { label: "+10 Days", type: "days", value: 10 },
+            { label: "+1 Month", type: "months", value: 1 },
+            { label: "+1 Year", type: "years", value: 1 }
+          ]}
           disabled={false}
         />
 
