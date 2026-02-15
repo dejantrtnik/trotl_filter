@@ -1,6 +1,6 @@
 {
   "name": "trotl-filter",
-  "version": "1.0.47",
+  "version": "1.0.48",
   "description": "Reusable filter UI",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
