@@ -49,7 +49,7 @@ const getBackgroundColor = (isSelected, card) => {
   return color;
 };
 
-const CardSelect = ({ mk, sk, finalMarkers = () => {}, callbackValues, callbackEvent }) => {
+const CardSelect = ({ mk, sk, finalMarkers = () => {}, callbackValues, callbackEvent, lines = true, linesColor = "#e6e6e6" }) => {
   const [disabled, setDisabled] = useState(true);
   const [markers, setMarkers] = useState(mk ?? _markers);
   const [selectedKeys, setSelectedKeys] = useState(sk ?? []);
@@ -157,8 +157,8 @@ const CardSelect = ({ mk, sk, finalMarkers = () => {}, callbackValues, callbackE
       <div className="bodyTeeth">
         <div className="bodyTeeth-first-row">{markers.slice(0, 16).map((m) => renderCard(m))}</div>
         <div className="bodyTeeth-second-row">{markers.slice(16, 32).map((m) => renderCard(m))}</div>
-        <div className="horizontal-line-h" />
-        <div className="vertical-line-v" />
+        {lines && <div className="horizontal-line-h" style={{ backgroundColor: linesColor }} />}
+        {lines && <div className="vertical-line-v" style={{ backgroundColor: linesColor }} />}
       </div>
     </>
   );

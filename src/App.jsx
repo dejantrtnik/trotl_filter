@@ -14,10 +14,11 @@ import {
   Button,
   Switch,
   Upload,
-  ColorPicker
+  ColorPicker,
+  CardSelect
 } from "./index.js";
 
-import CardSelect from "./components/CardSelect.jsx";
+// import CardSelect from "./components/CardSelect.jsx";
 
 const users = [
   { value: "1", label: "Alice Johnson", age: 30 },
@@ -306,6 +307,8 @@ export default function App() {
         callbackValues={(e) => console.log(e)}
         callbackEvent={(e) => console.log(e)}
         finalMarkers={(e) => setCardSelectedKeys(e)}
+        lines={true}
+        linesColor="#007bff"
       />
     </div>
   );
