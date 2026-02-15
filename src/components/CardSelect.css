@@ -1,0 +1,13 @@
+.fieldsInline001{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-bottom:12px}
+.fieldsInlineTeeth .button{height:30px;padding:6px 10px;font-size:13px}
+.bodyTeeth{position:relative;padding:12px;border:1px solid #eee;background:#fff;border-radius:4px;max-width:980px}
+.bodyTeeth-first-row,.bodyTeeth-second-row{display:flex;gap:8px;flex-wrap:nowrap;padding:8px 0}
+.custom-card-tooth{width:60px;height:120px;border:1px solid #ddd;border-radius:4px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.04);padding:6px;cursor:pointer;user-select:none;display:flex;flex-direction:column;justify-content:space-between;align-items:center;overflow:hidden}
+.custom-card-tooth.selected{border:1px solid #ff4d4d;background:#e6f7ff}
+.card-header-tooth{font-weight:700;font-size:14px;text-align:center}
+.card-body-tooth{font-size:12px;text-align:center;min-height:14px;margin:4px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#333}
+.card-footer-tooth{width:100%;text-align:center;font-size:12px;color:#666}
+.card-footer-tooth-multi{display:flex;gap:6px;align-items:center;justify-content:center}
+.horizontal-line-h{position:absolute;left:0;right:0;top:50%;height:1px;background:#e6e6e6;transform:translateY(-50%)}
+.vertical-line-v{position:absolute;top:0;bottom:0;left:50%;width:1px;background:#e6e6e6;transform:translateX(-50%)}
+.no-select{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}

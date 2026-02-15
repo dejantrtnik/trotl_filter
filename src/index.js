@@ -16,6 +16,8 @@ import Switch from "./components/Switch.jsx";
 import "./components/Switch.css";
 import Upload from "./components/Upload.jsx";
 import "./components/Upload.css";
+import CardSelect from "./components/CardSelect.jsx";
+import "./components/CardSelect.css";
 // export default Filter;   // if you want default import
 export {
   MultiSelectDropdown,
@@ -30,5 +32,6 @@ export {
   LineDivider,
   Button,
   Switch,
-  Upload
+  Upload,
+  CardSelect
 };

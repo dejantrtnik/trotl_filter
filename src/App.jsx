@@ -17,6 +17,7 @@ import {
   ColorPicker
 } from "./index.js";
 
+import CardSelect from "./components/CardSelect.jsx";
 
 const users = [
   { value: "1", label: "Alice Johnson", age: 30 },
@@ -39,6 +40,8 @@ export default function App() {
   const [userOptions, setUserOptions] = useState(users);
 
   const [selectedUser, setSelectedUser] = useState(null);
+
+  const [cardSelectedKeys, setCardSelectedKeys] = useState([]);
 
   const [formData, setFormData] = useState({
     components: [],
@@ -202,7 +205,7 @@ export default function App() {
         type="custom" // ok, cancel, delete, custom (null)
         style={{ width: 200, color: "" }}
         onClick={() => alert("Button clicked!")}>
-        floating button
+        shopping cart
       </Button>
 
       <Switch
@@ -286,6 +289,23 @@ export default function App() {
         presetColors={["#1677ff", "#ff4d4f", "#52c41a", "#faad14"]}
         allowCustom={true}
         disabled={true}
+      />
+
+      <LineDivider
+        text="Line Divider Example"
+        position="center"
+        color="#007bff"
+        thickness={2}
+        margin="30px 0"
+        fontSize={16}
+        fontWeight="bold"
+        fontColor="#007bff"
+      />
+      <CardSelect
+        sk={cardSelectedKeys}
+        callbackValues={(e) => console.log(e)}
+        callbackEvent={(e) => console.log(e)}
+        finalMarkers={(e) => setCardSelectedKeys(e)}
       />
     </div>
   );
