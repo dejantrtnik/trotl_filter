@@ -15,7 +15,8 @@ import {
   Switch,
   Upload,
   ColorPicker,
-  CardSelect
+  CardSelect,
+  EditableRows
 } from "./index.js";
 
 // import CardSelect from "./components/CardSelect.jsx";
@@ -30,7 +31,7 @@ const users = [
 
 export default function App() {
 
-  const [options, setOptions] = useState([
+  const [options, _setOptions] = useState([
     { id: 1, value: 1, label: "Alice Johnson" },
     { id: 2, value: 2, label: "Bob Smith" },
     { id: 3, value: 3, label: "Charlie Brown" },
@@ -47,11 +48,18 @@ export default function App() {
   const [formData, setFormData] = useState({
     components: [],
     inputValue: "",
-    switchEnabled: false
+    switchEnabled: false,
+    products: []
   });
 
+  const handleChange = (key, value) => {
+    setFormData(prev => ({ ...prev, [key]: value }));
+  };
+
+  const theme = {};
+
   // Demo files to show in Upload when `value` is provided
-  const demoFiles = [
+  const _demoFiles = [
     { name: "sample1.txt", size: 1234 },
     { name: "picture.png", size: 23456 }
   ];
@@ -290,6 +298,26 @@ export default function App() {
         presetColors={["#1677ff", "#ff4d4f", "#52c41a", "#faad14"]}
         allowCustom={true}
         disabled={true}
+      />
+
+      <LineDivider
+        text="Line Divider Example"
+        position="center"
+        color="#007bff"
+        thickness={2}
+        margin="30px 0"
+        fontSize={16}
+        fontWeight="bold"
+        fontColor="#007bff"
+      />
+
+
+      <EditableRows
+        rows={formData.products}
+        onChange={(rows) => handleChange("products", rows)}
+        options1={["Option A", "Option B", "Option C"]}
+        options2={["Type X", "Type Y", "Type Z"]}
+        theme={theme}
       />
 
       <LineDivider

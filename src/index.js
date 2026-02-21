@@ -18,6 +18,7 @@ import Upload from "./components/Upload.jsx";
 import "./components/Upload.css";
 import CardSelect from "./components/CardSelect.jsx";
 import "./components/CardSelect.css";
+import EditableRows from "./components/EditableRows.jsx";
 // export default Filter;   // if you want default import
 export {
   MultiSelectDropdown,
@@ -33,5 +34,6 @@ export {
   Button,
   Switch,
   Upload,
-  CardSelect
+  CardSelect,
+  EditableRows
 };
