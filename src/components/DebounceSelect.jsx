@@ -261,9 +261,10 @@ const DebounceSelect = ({
             setOpen(true);
           }}
           placeholder={placeholder}
-          onFocus={() => setOpen(true)}
+          // onFocus={() => setOpen(true)}
+          onFocus={handleDoubleClick}
           onBlur={() => setTimeout(() => setOpen(false), 200)}
-          onDoubleClick={handleDoubleClick}
+          // onDoubleClick={handleDoubleClick}
           disabled={disabled}
           style={style}
         />
