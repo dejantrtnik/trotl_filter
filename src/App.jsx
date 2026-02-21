@@ -78,7 +78,7 @@ export default function App() {
     (option, index, self) =>
       index === self.findIndex((o) => o.value === option.value)
   );
-
+const [dateIme, setDateIme] = useState("");
   return (
     <div className="body-content">
       <div style={{ display: "flex", gap: "1rem" }}>
@@ -121,9 +121,10 @@ export default function App() {
           timezone={"UTC"}
           timeFormat={"HH:mm"}
           dateFormat={"YYYY-MM-DD"}
-          onChange={(dt) => console.log("Selected datetime:", dt)}
+          onChange={(dt) => setDateIme(dt)}
           pushUrlParamObj={"datetime"}
           predefinedRanges={['today', 'yesterday', 'lastweek', 7, 'thismonth', 'lastyear']}
+          value={dateIme}
           startWith={"monday"}
           presets={[
             { label: "Clear", type: "clear" },
