@@ -202,6 +202,11 @@ const DebounceSelect = ({
     String(opt.value).toLowerCase() === input.trim().toLowerCase()
   );
 
+  // title shown on hover when single selection is displayed in the input
+  const inputTitle = (!open && !isMulti && selectedItems.length > 0)
+    ? selectedItems[0].label
+    : undefined;
+
   const handleAddNew = () => {
     if (!input.trim()) return;
     const newOption = { label: input.trim(), value: input.trim() };
@@ -261,6 +266,7 @@ const DebounceSelect = ({
             setOpen(true);
           }}
           placeholder={placeholder}
+          title={inputTitle}
           // onFocus={() => setOpen(true)}
           onFocus={handleDoubleClick}
           onBlur={() => setTimeout(() => setOpen(false), 200)}
