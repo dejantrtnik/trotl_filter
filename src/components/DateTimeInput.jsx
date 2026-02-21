@@ -96,6 +96,22 @@ export default function DateTimeInput({
     return toInputString(d.getTime());
   });
 
+  // internal value for the time input.  Previously the <input> read
+  // directly from `value` which meant that when the component was
+  // controlled the field could never update until the parent passed a
+  // new prop.  By keeping a separate `timeValue` that syncs from `value` but
+  // is mutated as the user types we allow the time field to stay responsive
+  // even in controlled scenarios.
+  const [timeValue, setTimeValue] = useState(() => {
+    if (value) {
+      const d = new Date(value);
+      const hh = String(d.getHours()).padStart(2, '0');
+      const mm = String(d.getMinutes()).padStart(2, '0');
+      return `${hh}:${mm}`;
+    }
+    return timeStart || "";
+  });
+
   // Dropdown state & positioning
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -313,6 +329,18 @@ export default function DateTimeInput({
     }
   }, [isControlled, normalizedControlledValue]);
 
+  // keep the timeValue in sync whenever the effective value or start time changes
+  useEffect(() => {
+    if (value) {
+      const d = new Date(value);
+      const hh = String(d.getHours()).padStart(2, '0');
+      const mm = String(d.getMinutes()).padStart(2, '0');
+      setTimeValue(`${hh}:${mm}`);
+    } else {
+      setTimeValue(timeStart || '');
+    }
+  }, [value, timeStart]);
+
   // Formatting display (similar to RangePicker)
   const formatDisplay = () => {
     if (!value) return "";
@@ -423,12 +451,18 @@ export default function DateTimeInput({
 
   const handleTimeChange = (e) => {
     const t = e.target.value; // HH:mm
-    if (!value) return;
-    const d = new Date(value);
+    setTimeValue(t);
+    // determine base date: prefer current value, fall back to now
+    const baseDate = value ? new Date(value) : new Date();
     const [h, m] = t.split(":");
-    d.setHours(Number(h), Number(m), 0, 0);
-    const str = toInputString(d.getTime());
-    if (!isControlled) setValue(str);
+    baseDate.setHours(Number(h), Number(m), 0, 0);
+    const str = toInputString(baseDate.getTime());
+    // always update local `value` so the dropdown display keeps up
+    if (!isControlled) {
+      setValue(str);
+    } else {
+      setValue(str);
+    }
     setUrlParam(str);
     onChange?.(str);
   };
@@ -561,7 +595,7 @@ export default function DateTimeInput({
               <label style={{ fontSize: 12, display: 'block', marginBottom: 4, color: disabled ? '#9ca3af' : undefined }}>Time:</label>
               <input
                 type="time"
-                value={(() => { if (!value) return ''; const d = new Date(value); const hh = String(d.getHours()).padStart(2, '0'); const mm = String(d.getMinutes()).padStart(2, '0'); return `${hh}:${mm}`; })()}
+                value={timeValue}
                 onChange={handleTimeChange}
                 className="basic-input"
                 disabled={disabled}
